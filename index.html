@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>롤 스펠 체크 - 브리핑 에디션</title>
+    <title>롤 스펠 체크 - 프로 매치 에디션</title>
     <style>
         html, body { height: 100%; margin: 0; padding: 0; background-color: #0b0b0e; }
         body { font-family: 'Malgun Gothic', sans-serif; color: #f0e6d2; display: flex; flex-direction: column; justify-content: center; align-items: center; user-select: none; overflow: hidden; position: relative; }
@@ -30,40 +30,56 @@
         /* 알림 팝업 */
         .left-toast { position: absolute; top: 55px; left: 15px; color: #c8aa6e; font-size: 12px; font-weight: bold; background: rgba(10,10,15,0.9); padding: 4px 10px; border-radius: 4px; border-left: 4px solid #c8aa6e; pointer-events: none; opacity: 0; transition: opacity 0.2s; z-index: 10; }
 
-        /* 레이아웃 구조 */
-        .layout-container { display: flex; align-items: stretch; gap: 12px; width: 98%; max-width: 1140px; box-sizing: border-box; }
+        /* 레이아웃 구조 개편 (조금 더 왼쪽으로 밀어붙임) */
+        .layout-container { display: flex; align-items: stretch; gap: 12px; width: 99%; max-width: 1300px; box-sizing: border-box; padding-left: 5px; }
 
         /* 좌측 메인판 */
-        .main-wrapper { background-color: #121217; padding: 8px 12px; border-radius: 12px; border: 1px solid #262631; box-shadow: 0 15px 40px rgba(0,0,0,0.7); flex: 3; min-width: 0; box-sizing: border-box; }
+        .main-wrapper { background-color: #121217; padding: 8px 12px; border-radius: 12px; border: 1px solid #262631; box-shadow: 0 15px 40px rgba(0,0,0,0.7); flex: 2.2; min-width: 0; box-sizing: border-box; }
         .flex-container { display: flex; flex-direction: column; gap: 6px; }
         
-        /* 우측 전용 오더 브리핑 보드 */
-        .order-summary-box { flex: 1; min-width: 220px; max-width: 260px; background: #111115; border: 1px solid #c8aa6e; border-radius: 12px; padding: 12px; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 4px 20px rgba(200, 170, 110, 0.15); }
-        .order-summary-title { font-size: 13px; font-weight: bold; color: #c8aa6e; background: rgba(200, 170, 110, 0.08); padding: 6px; border-radius: 4px; text-align: center; letter-spacing: 0.5px; border-bottom: 1px solid rgba(200, 170, 110, 0.2); }
+        /* 우측 이원화 브리핑 컨테이너 영역 */
+        .right-briefing-zone { flex: 1.8; display: flex; gap: 10px; min-width: 440px; box-sizing: border-box; }
+        
+        /* 우측 각각의 오더 브리핑 보드 스타일 */
+        .order-summary-box { flex: 1; background: #111115; border: 1px solid #3c3c4d; border-radius: 12px; padding: 12px; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 4px 25px rgba(0,0,0,0.5); }
+        .order-summary-box.spell-box-border { border-color: #4a5a73; }
+        .order-summary-box.ult-box-border { border-color: #7d5b38; }
+        
+        .order-summary-title { font-size: 13px; font-weight: bold; text-align: center; letter-spacing: 0.5px; padding: 6px; border-radius: 4px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .spell-box-border .order-summary-title { color: #8ba2c4; background: rgba(139, 162, 196, 0.08); }
+        .ult-box-border .order-summary-title { color: #c8aa6e; background: rgba(200, 170, 110, 0.08); }
+        
         .order-summary-content { font-size: 13px; font-weight: bold; color: #f0e6d2; flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
         
-        /* 아이템 스타일 */
+        /* 아이템 스타일 및 애니메이션 효과 */
         .order-item { display: flex; justify-content: space-between; align-items: center; background: #1a1a24; padding: 7px 10px; border-radius: 4px; border: 1px solid #2c2c3d; letter-spacing: 0.5px; }
-        .order-item .item-text { color: #e4e4e9; }
-        .order-item .item-time { color: #c8aa6e; font-family: 'Courier New', monospace; font-weight: 900; }
-        .order-summary-content .empty-msg { color: #5b5b66; font-size: 12px; background: none; border: none; text-align: center; padding-top: 50px; line-height: 1.6; }
+        .order-item .item-text { font-weight: bold; }
+        .order-item .item-time { color: #ffffff; font-family: 'Courier New', monospace; font-weight: 900; background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 3px; }
+        .order-summary-content .empty-msg { color: #5b5b66; font-size: 12px; background: none; border: none; text-align: center; padding-top: 60px; line-height: 1.6; }
 
         /* 라인별 행 디자인 */
         .lane-row { display: flex; align-items: center; background-color: #16161f; border: 1px solid #2a2a38; border-radius: 6px; padding: 4px 12px; gap: 10px; min-width: 0; }
-        .lane-title { width: 45px; font-size: 14px; font-weight: 900; color: #c89b3c; text-align: center; flex-shrink: 0; letter-spacing: 0.5px; }
+        .lane-title { width: 45px; font-size: 14px; font-weight: 900; text-align: center; flex-shrink: 0; letter-spacing: 0.5px; padding: 3px 0; border-radius: 4px; }
         
+        /* 라인별 전용 시그니처 색상 매핑 (메인 판 라인 타이틀 배경색) */
+        .lane-row.lane-top .lane-title { color: #fff; background-color: #27ae60; }
+        .lane-row.lane-jgl .lane-title { color: #fff; background-color: #8e44ad; }
+        .lane-row.lane-mid .lane-title { color: #fff; background-color: #2980b9; }
+        .lane-row.lane-adc .lane-title { color: #fff; background-color: #c0392b; }
+        .lane-row.lane-sup .lane-title { color: #111; background-color: #f1c40f; }
+
         /* 챔피언 검색 */
-        .champ-input { width: 85px; padding: 4px; background: #22222b; color: #fff; border: 1px solid #444452; border-radius: 4px; font-size: 12px; text-align: center; font-weight: bold; flex-shrink: 0; }
+        .champ-input { width: 80px; padding: 4px; background: #22222b; color: #fff; border: 1px solid #444452; border-radius: 4px; font-size: 12px; text-align: center; font-weight: bold; flex-shrink: 0; }
         .champ-input:focus { border-color: #c8aa6e; outline: none; }
         
         /* 특성 체크박스 */
-        .options { display: flex; flex-direction: column; gap: 2px; font-size: 11px; font-weight: bold; color: #888; background: #0d0d12; padding: 4px 6px; border-radius: 4px; width: 75px; flex-shrink: 0; box-sizing: border-box; }
+        .options { display: flex; flex-direction: column; gap: 2px; font-size: 11px; font-weight: bold; color: #888; background: #0d0d12; padding: 4px 6px; border-radius: 4px; width: 70px; flex-shrink: 0; box-sizing: border-box; }
         .options label { display: flex; align-items: center; gap: 3px; cursor: pointer; white-space: nowrap; }
         
         /* 스펠 및 궁 슬롯 */
         .spell-container { display: flex; gap: 6px; flex-grow: 1; align-items: center; min-width: 0; }
         .slot-box { text-align: center; background: #0e0e12; padding: 4px 6px; border-radius: 5px; border: 1px solid #22222a; display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
-        .ult-box { flex: 1.3; background: #121926; border-color: #202d42; }
+        .ult-box { flex: 1.2; background: #121926; border-color: #202d42; }
         
         .select-input-group { display: flex; gap: 3px; justify-content: center; width: 100%; }
         .spell-select { width: 100%; padding: 2px; background: #282830; color: #f0e6d2; border: 1px solid #444; border-radius: 4px; font-size: 12px; cursor: pointer; min-width: 0; font-weight: bold; }
@@ -95,7 +111,6 @@
         <button class="clock-btn" id="gameClockToggleBtn" onclick="toggleGameClock()">시작</button>
         <button class="clock-btn reset" onclick="resetAllData()">전체 초기화</button>
         
-        <!-- 🔊 기본 꺼짐 상태 시작 -->
         <div class="voice-control-group">
             <label class="voice-opt-label">
                 <input type="checkbox" id="voiceAlertToggle" onchange="onVoiceToggleChange()"> 음성 알림 활성화
@@ -115,10 +130,19 @@
             <div class="flex-container" id="app"></div>
         </div>
 
-        <div class="order-summary-box">
-            <div class="order-summary-title">오더 브리핑 뷰</div>
-            <div class="order-summary-content" id="orderSummaryContent">
-                <div class="empty-msg">카운트다운 중인<br>스펠이 없습니다.</div>
+        <div class="right-briefing-zone">
+            <div class="order-summary-box spell-box-border">
+                <div class="order-summary-title">스펠 브리핑 뷰</div>
+                <div class="order-summary-content" id="spellSummaryContent">
+                    <div class="empty-msg">카운트다운 중인<br>스펠이 없습니다.</div>
+                </div>
+            </div>
+
+            <div class="order-summary-box ult-box-border">
+                <div class="order-summary-title">궁극기 브리핑 뷰</div>
+                <div class="order-summary-content" id="ultSummaryContent">
+                    <div class="empty-msg">카운트다운 중인<br>궁극기가 없습니다.</div>
+                </div>
             </div>
         </div>
     </div>
@@ -193,14 +217,21 @@
         };
 
         const lanes = [
-            { id: 'TOP', name: 'TOP', default: ['텔포', '점멸'] },
-            { id: 'JGL', name: 'JGL', default: ['강타', '점멸'] },
-            { id: 'MID', name: 'MID', default: ['텔포', '점멸'] },
-            { id: 'ADC', name: 'ADC', default: ['방어막', '점멸'] },
-            { id: 'SUP', name: 'SUP', default: ['점화', '점멸'] }
+            { id: 'TOP', name: '탑', cssClass: 'lane-top', default: ['텔포', '점멸'] },
+            { id: 'JGL', name: '정글', cssClass: 'lane-jgl', default: ['강타', '점멸'] },
+            { id: 'MID', name: '미드', cssClass: 'lane-mid', default: ['텔포', '점멸'] },
+            { id: 'ADC', name: '원딜', cssClass: 'lane-adc', default: ['방어막', '점멸'] },
+            { id: 'SUP', name: '서폿', cssClass: 'lane-sup', default: ['점화', '점멸'] }
         ];
 
-        const laneKrNameDB = { 'TOP': '탑', 'JGL': '정글', 'MID': '미드', 'ADC': '원딜', 'SUP': '서폿' };
+        // 브리핑 뷰 전용 컬러 매핑 매트릭스
+        const laneColors = {
+            '탑': '#46a374',
+            '정글': '#9b59b6',
+            '미드': '#3498db',
+            '원딜': '#e74c3c',
+            '서폿': '#f1c40f'
+        };
 
         let activeTimers = {};
 
@@ -295,7 +326,7 @@
             document.getElementById('gameClockInput').value = "00:00";
 
             activeTimers = {};
-            updateOrderSummaryView([]);
+            updateDualSummaryView([], []);
 
             lanes.forEach(lane => {
                 document.getElementById(`utong-${lane.id}`).checked = false;
@@ -323,11 +354,11 @@
             window.ltTimeout = setTimeout(() => t.style.opacity = '0', 2000);
         }
 
-        // 레이아웃 구성기
+        // 레이아웃 동적 렌더러
         const app = document.getElementById('app');
         lanes.forEach(lane => {
             const row = document.createElement('div');
-            row.className = 'lane-row';
+            row.className = `lane-row ${lane.cssClass}`;
             
             let html = `
                 <div class="lane-title">${lane.name}</div>
@@ -437,7 +468,6 @@
             return 100 / (100 + speed);
         }
 
-        // 🗣️ [개선 매치] 조사를 전부 배제하고 깔끔하게 딱 브리핑만 하도록 수정
         function speakOrderText(text) {
             const isVoiceEnabled = document.getElementById('voiceAlertToggle').checked;
             if (!isVoiceEnabled) return; 
@@ -450,7 +480,6 @@
             const volumeSliderVal = parseInt(document.getElementById('voiceVolume').value) || 0;
             utterance.volume = volumeSliderVal / 100;
 
-            // 템포를 약간 빠르게 땡겨서 기계적인 느낌을 줄임
             utterance.rate = 1.05; 
             utterance.pitch = 1.0; 
 
@@ -467,9 +496,13 @@
             const select = document.getElementById(`select-${laneId}-${slotIndex}`);
             const currentSeconds = getGameTimeSeconds();
             
+            const targetLaneObj = lanes.find(l => l.id === laneId);
+            const krName = targetLaneObj ? targetLaneObj.name : laneId;
+
             activeTimers[timerKey] = {
                 type: 'spell',
                 lane: laneId,
+                laneKr: krName,
                 name: select.value,
                 baseSec: spellRegistry[select.value],
                 triggeredAtGameTime: currentSeconds,
@@ -492,9 +525,13 @@
             }
 
             const currentSeconds = getGameTimeSeconds();
+            const targetLaneObj = lanes.find(l => l.id === laneId);
+            const krName = targetLaneObj ? targetLaneObj.name : laneId;
+
             activeTimers[timerKey] = {
                 type: 'ult',
                 lane: laneId,
+                laneKr: krName,
                 name: '궁극기',
                 triggeredAtGameTime: currentSeconds,
                 playedAlert: false 
@@ -507,42 +544,47 @@
             btn.innerText = formatToOrderTime(targetGameTime);
         }
 
-        function updateOrderSummaryView(newList) {
-            const summaryBox = document.getElementById('orderSummaryContent');
+        // 📊 [개선 패치] 이원화된 전용 브리핑 뷰 및 컬러 동적 바인딩 시스템
+        function updateDualSummaryView(spellList, ultList) {
+            const spellBox = document.getElementById('spellSummaryContent');
+            const ultBox = document.getElementById('ultSummaryContent');
             
-            if (newList.length === 0) {
-                summaryBox.innerHTML = '<div class="empty-msg">카운트다운 중인<br>스펠이 없습니다.</div>';
-                return;
+            // 1. 스펠 전용 칸 렌더링
+            if (spellList.length === 0) {
+                spellBox.innerHTML = '<div class="empty-msg">카운트다운 중인<br>스펠이 없습니다.</div>';
+            } else {
+                spellBox.innerHTML = spellList.map(item => {
+                    const clr = laneColors[item.laneKr] || '#ffffff';
+                    return `
+                        <div class="order-item" id="order-node-${item.key}">
+                            <span class="item-text" style="color: ${clr};">${item.laneKr} ${item.shortName}</span>
+                            <span class="item-time">${item.targetTimeStr}</span>
+                        </div>
+                    `;
+                }).join('');
             }
 
-            const currentNodes = Array.from(summaryBox.querySelectorAll('.order-item'));
-            
-            if (currentNodes.length !== newList.length || summaryBox.querySelector('.empty-msg')) {
-                summaryBox.innerHTML = newList.map(item => `
-                    <div class="order-item" id="order-node-${item.key}">
-                        <span class="item-text">${item.lane} ${item.shortName}</span>
-                        <span class="item-time">${item.targetTimeStr}</span>
-                    </div>
-                `).join('');
-                return;
+            // 2. 궁극기 전용 칸 렌더링
+            if (ultList.length === 0) {
+                ultBox.innerHTML = '<div class="empty-msg">카운트다운 중인<br>궁극기가 없습니다.</div>';
+            } else {
+                ultBox.innerHTML = ultList.map(item => {
+                    const clr = laneColors[item.laneKr] || '#ffffff';
+                    return `
+                        <div class="order-item" id="order-node-${item.key}">
+                            <span class="item-text" style="color: ${clr};">${item.laneKr} ${item.shortName}</span>
+                            <span class="item-time">${item.targetTimeStr}</span>
+                        </div>
+                    `;
+                }).join('');
             }
-
-            newList.forEach((item, idx) => {
-                const node = currentNodes[idx];
-                node.id = `order-node-${item.key}`;
-                const txtNode = node.querySelector('.item-text');
-                const timeNode = node.querySelector('.item-time');
-                
-                const nextTxt = `${item.lane} ${item.shortName}`;
-                if(txtNode.innerText !== nextTxt) txtNode.innerText = nextTxt;
-                if(timeNode.innerText !== item.targetTimeStr) timeNode.innerText = item.targetTimeStr;
-            });
         }
 
-        // 메인 루프 엔진
+        // 메인 통합 엔진 클락 루프
         setInterval(() => {
             const currentSeconds = getGameTimeSeconds();
-            let summaryList = [];
+            let spellSummary = [];
+            let ultSummary = [];
 
             Object.keys(activeTimers).forEach(key => {
                 const timer = activeTimers[key];
@@ -575,28 +617,33 @@
                     if(shortName === '텔포') shortName = '텔';
                     if(shortName === '궁극기') shortName = '궁';
 
-                    // 🎯 20초 남았을 때 브리핑 대사 변경
                     if (timeLeft <= 20 && !timer.playedAlert) {
-                        const krLane = laneKrNameDB[timer.lane] || timer.lane;
                         const spellTxt = (timer.name === '궁극기') ? '궁' : timer.name;
-                        
-                        // "~입니다" 같은 조사를 싹 빼서 깔끔하게 끝남 (예: "탑 점멸 이십초 전")
-                        speakOrderText(`${krLane} ${spellTxt} 이십초 전`);
+                        speakOrderText(`${timer.laneKr} ${spellTxt} 이십초 전`);
                         timer.playedAlert = true;
                     }
 
-                    summaryList.push({
+                    const pushData = {
                         key: key,
-                        lane: timer.lane,
+                        laneId: laneId,
+                        laneKr: timer.laneKr,
                         shortName: shortName,
                         targetTimeStr: formatToOrderTime(targetGameTime),
                         targetSec: targetGameTime
-                    });
+                    };
+
+                    if(type === 'ult') {
+                        ultSummary.push(pushData);
+                    } else {
+                        spellSummary.push(pushData);
+                    }
                 }
             });
 
-            summaryList.sort((a, b) => a.targetSec - b.targetSec);
-            updateOrderSummaryView(summaryList);
+            spellSummary.sort((a, b) => a.targetSec - b.targetSec);
+            ultSummary.sort((a, b) => a.targetSec - b.targetSec);
+            
+            updateDualSummaryView(spellSummary, ultSummary);
         }, 1000);
 
         function resetTimer(laneId, slotIndex) {
