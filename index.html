@@ -3,17 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LoL 인게임 타임스탬프 스펠 체크 (수정본)</title>
+    <title>LoL 인게임 타임스탬프 스펠 체크 (버그 수정본)</title>
     <style>
         html, body { height: 100%; margin: 0; padding: 0; background-color: #0f0f12; }
         body { font-family: 'Malgun Gothic', sans-serif; color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center; user-select: none; overflow: hidden; position: relative; }
         
-        /* [좌측 상단] 게임 시간 컨트롤러 - 슬림화 */
+        /* [좌측 상단] 게임 시간 컨트롤러 - 슬림화 및 버튼 추가 */
         .game-clock-container { position: absolute; top: 10px; left: 15px; background: rgba(20, 20, 25, 0.95); padding: 6px 10px; border-radius: 6px; border: 1px solid #4c4c55; display: flex; align-items: center; gap: 6px; z-index: 20; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
         .game-clock-label { font-size: 11px; color: #ffcd00; font-weight: bold; }
         .game-time-input { width: 55px; background: #25252b; color: #ffcd00; border: 1px solid #666; border-radius: 4px; font-size: 13px; text-align: center; font-weight: bold; padding: 2px; }
         .clock-btn { padding: 3px 8px; font-size: 11px; font-weight: bold; border: none; border-radius: 4px; cursor: pointer; background: #3d4461; color: #fff; }
         .clock-btn.running { background: #d92b36; }
+        .clock-btn.reset { background: #5c6370; color: #fff; border: 1px solid #4b5263; }
+        .clock-btn.reset:hover { background: #4b5263; }
 
         /* 알림창 */
         .left-toast { position: absolute; top: 55px; left: 15px; color: #ff9900; font-size: 12px; font-weight: bold; background: rgba(0,0,0,0.85); padding: 4px 10px; border-radius: 4px; border-left: 4px solid #ff9900; pointer-events: none; opacity: 0; transition: opacity 0.2s; z-index: 10; }
@@ -62,13 +64,16 @@
 </head>
 <body>
 
+    <!-- 게임 시간 동기화 및 초기화 컨트롤러 -->
     <div class="game-clock-container">
         <span class="game-clock-label">GAME TIME</span>
         <input type="text" class="game-time-input" id="gameClockInput" value="00:00" placeholder="00:00">
         <button class="clock-btn" id="gameClockToggleBtn" onclick="toggleGameClock()">시작</button>
         <button class="clock-btn" onclick="syncGameClock()">동기화</button>
+        <button class="clock-btn reset" onclick="resetAllData()">전체 초기화</button>
     </div>
 
+    <!-- 모퉁이 알림 메시지 -->
     <div class="left-toast" id="leftToast"></div>
 
     <div class="main-wrapper">
@@ -80,9 +85,9 @@
         let gameTimeOffset = 0;   
         let gameClockInterval = null;
 
-        // 원본 챔피언 궁극기 데이터베이스
+        // 원본 챔피언 궁극기 데이터베이스 (크로스체크 완료: 갱플랭크 누락 버그 해결)
         const championUltDB = {
-            '가렌': [120, 100, 80], '갈리오': [200, 180, 160], '그라가스': [120, 100, 80], '그레이브즈': [120, 90, 60],
+            '가렌': [120, 100, 80], '갈리오': [200, 180, 160], '갱플랭크': [180, 160, 140], '그라가스': [120, 100, 80], '그레이브즈': [120, 90, 60],
             '나르': [90, 70, 50], '나미': [120, 110, 100], '노틸러스': [140, 110, 80], '녹턴': [140, 115, 90],
             '누누': [110, 100, 90], '니달리': [3, 3, 3], '다리우스': [120, 100, 80], '다이애나': [100, 90, 80],
             '드레이븐': [100, 90, 80], '라이즈': [210, 180, 150], '럭스': [60, 50, 40], '럼블': [130, 110, 90],
@@ -121,7 +126,7 @@
             '헤카림': [140, 120, 100], '흐웨이': [140, 115, 90]
         };
 
-        // 유저 친화적 줄임말 사전 데이터
+        // 줄임말 사전 데이터
         const aliasDB = {
             '블츠': '블리츠크랭크', '블리': '블리츠크랭크', '블클': '블리츠크랭크', '블리츠': '블리츠크랭크',
             '트린': '트린다미어', '트페': '트위스티드페이트', 'tf': '트위스티드페이트', '갱플': '갱플랭크', 'gp': '갱플랭크',
@@ -154,7 +159,7 @@
             { id: 'SUP', name: 'SUP', default: ['점화', '점멸'] }
         ];
 
-        const activeTimers = {};
+        let activeTimers = {};
 
         // --- 게임 타임 관리 엔진 ---
         function getGameTimeSeconds() {
@@ -210,6 +215,50 @@
             gameTimeOffset = parseMMSSToSeconds(inputVal);
             if (gameStartTime) gameStartTime = Date.now();
             showLeftToast(`🕒 게임 시간 동기화: ${formatSecondsToMMSS(gameTimeOffset)}`);
+        }
+
+        // 🔥 [추가 기능] 시스템 전체 초기화 함수
+        function resetAllData() {
+            // 1. 게임 타이머 초기화 및 중지
+            if (gameClockInterval) {
+                clearInterval(gameClockInterval);
+                gameClockInterval = null;
+            }
+            gameStartTime = null;
+            gameTimeOffset = 0;
+            
+            const toggleBtn = document.getElementById('gameClockToggleBtn');
+            toggleBtn.innerText = "시작";
+            toggleBtn.classList.remove('running');
+            document.getElementById('gameClockInput').value = "00:00";
+
+            // 2. 실행 중인 타이머 객체 비우기
+            activeTimers = {};
+
+            // 3. UI 컴포넌트 전체 리셋
+            lanes.forEach(lane => {
+                // 체크박스 해제
+                document.getElementById(`utong-${lane.id}`).checked = false;
+                document.getElementById(`shoes-${lane.id}`).checked = false;
+                
+                // 챔피언명 입력칸 초기화
+                document.getElementById(`champ-${lane.id}`).value = "";
+
+                // 스펠 리셋
+                for (let i = 0; i < 2; i++) {
+                    resetTimerUI(lane.id, i);
+                }
+                // 궁극기 리셋
+                resetUltTimerUI(lane.id);
+                
+                // 라디오 버튼 기본값(6레벨) 설정 및 기본 쿨타임 복구
+                document.getElementById(`ultlvl-${lane.id}-6`).checked = true;
+                document.getElementById(`ultbase-${lane.id}-6`).value = 120;
+                document.getElementById(`ultbase-${lane.id}-11`).value = 100;
+                document.getElementById(`ultbase-${lane.id}-16`).value = 80;
+            });
+
+            showLeftToast("🔄 모든 데이터가 초기화되었습니다.");
         }
 
         function showLeftToast(msg) {
@@ -315,4 +364,122 @@
 
         function onSpellSelectChange(laneId, slotIndex) {
             const select = document.getElementById(`select-${laneId}-${slotIndex}`);
-            const btn = document.getElementById(`btn-${laneId}-${slot
+            const btn = document.getElementById(`btn-${laneId}-${slotIndex}`);
+            if (!activeTimers[`${laneId}-${slotIndex}`]) {
+                btn.innerText = select.value;
+            }
+        }
+
+        function getSpellModifier(hasUtong, hasShoes) {
+            let speed = 0;
+            if (hasUtong) speed += 18;
+            if (hasShoes) speed += 12;
+            return 100 / (100 + speed);
+        }
+
+        function getUltModifier(hasShoes) {
+            let speed = 0;
+            if (hasShoes) speed += 15;
+            return 100 / (100 + speed);
+        }
+
+        function handleSpellClick(laneId, slotIndex) {
+            const timerKey = `${laneId}-${slotIndex}`;
+            if (activeTimers[timerKey]) { 
+                resetTimer(laneId, slotIndex); 
+                return; 
+            }
+            
+            const select = document.getElementById(`select-${laneId}-${slotIndex}`);
+            activeTimers[timerKey] = {
+                type: 'spell',
+                baseSec: spellRegistry[select.value],
+                triggeredAtGameTime: getGameTimeSeconds()
+            };
+            
+            document.getElementById(`btn-${laneId}-${slotIndex}`).classList.add('active');
+        }
+
+        function handleUltClick(laneId) {
+            const timerKey = `${laneId}-ult`;
+            if (activeTimers[timerKey]) { 
+                resetUltTimer(laneId); 
+                return; 
+            }
+
+            activeTimers[timerKey] = {
+                type: 'ult',
+                triggeredAtGameTime: getGameTimeSeconds()
+            };
+
+            document.getElementById(`btn-${laneId}-ult`).classList.add('active');
+        }
+
+        // --- ⚙️ 실시간 타이머 루프 ---
+        setInterval(() => {
+            Object.keys(activeTimers).forEach(key => {
+                const parts = key.split('-');
+                const laneId = parts[0];
+                const type = parts[1]; 
+
+                const display = document.getElementById(`timer-${laneId}-${type}`);
+                const btn = document.getElementById(`btn-${laneId}-${type}`);
+                if(!display || !btn) return;
+                
+                let targetGameTime = 0;
+                if (type === 'ult') {
+                    targetGameTime = getTargetGameTime(laneId, null, 'ult');
+                } else {
+                    targetGameTime = getTargetGameTime(laneId, parseInt(type), 'spell');
+                }
+
+                const timeLeft = targetGameTime - getGameTimeSeconds();
+
+                if (timeLeft <= 0) {
+                    if (type === 'ult') resetUltTimer(laneId);
+                    else resetTimer(laneId, parseInt(type));
+                } else {
+                    const orderText = formatToOrderTime(targetGameTime);
+                    btn.innerText = orderText; 
+                    display.innerText = orderText; 
+                    display.classList.add('running');
+                }
+            });
+        }, 1000);
+
+        function resetTimer(laneId, slotIndex) {
+            delete activeTimers[`${laneId}-${slotIndex}`];
+            resetTimerUI(laneId, slotIndex);
+        }
+
+        function resetTimerUI(laneId, slotIndex) {
+            const btn = document.getElementById('btn-' + laneId + '-' + slotIndex);
+            if(btn) btn.classList.remove('active');
+            const display = document.getElementById('timer-' + laneId + '-' + slotIndex);
+            if(display) {
+                display.innerText = "READY";
+                display.classList.remove('running');
+            }
+            onSpellSelectChange(laneId, slotIndex);
+        }
+
+        function resetUltTimer(laneId) {
+            delete activeTimers[`${laneId}-ult`];
+            resetUltTimerUI(laneId);
+        }
+
+        function resetUltTimerUI(laneId) {
+            const btn = document.getElementById(`btn-${laneId}-ult`);
+            if(btn) {
+                btn.classList.remove('active');
+                btn.innerText = "궁극기";
+            }
+            const display = document.getElementById(`timer-${laneId}-ult`);
+            if(display) {
+                display.innerText = "READY";
+                display.classList.remove('running');
+            }
+        }
+    </script>
+</body>
+</html>
