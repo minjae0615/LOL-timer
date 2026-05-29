@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LoL 인게임 타임스탬프 스펠 체크 (컴팩트 버전)</title>
+    <title>LoL 인게임 타임스탬프 스펠 체크 (완벽 버그 수정본)</title>
     <style>
         html, body { height: 100%; margin: 0; padding: 0; background-color: #0f0f12; }
         body { font-family: 'Malgun Gothic', sans-serif; color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center; user-select: none; overflow: hidden; position: relative; }
         
-        /* [좌측 상단] 게임 시간 컨트롤러 - 살짝 슬림하게 */
+        /* [좌측 상단] 게임 시간 컨트롤러 - 슬림화 */
         .game-clock-container { position: absolute; top: 10px; left: 15px; background: rgba(20, 20, 25, 0.95); padding: 6px 10px; border-radius: 6px; border: 1px solid #4c4c55; display: flex; align-items: center; gap: 6px; z-index: 20; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
         .game-clock-label { font-size: 11px; color: #ffcd00; font-weight: bold; }
         .game-time-input { width: 55px; background: #25252b; color: #ffcd00; border: 1px solid #666; border-radius: 4px; font-size: 13px; text-align: center; font-weight: bold; padding: 2px; }
@@ -20,7 +20,7 @@
 
         /* 메인 컨테이너 - 세로 여백 줄임 */
         .main-wrapper { background-color: #16161a; padding: 8px 12px; border-radius: 12px; border: 1px solid #323238; box-shadow: 0 15px 40px rgba(0,0,0,0.6); width: 98%; max-width: 860px; box-sizing: border-box; margin-top: 35px; }
-        .flex-container { display: flex; flex-direction: column; gap: 6px; } /* 간격 압축 */
+        .flex-container { display: flex; flex-direction: column; gap: 6px; }
         
         /* 라인별 가로 행 - 세로 패딩 압축 */
         .lane-row { display: flex; align-items: center; background-color: #1f1f25; border: 1px solid #3c3c46; border-radius: 6px; padding: 4px 12px; gap: 10px; min-width: 0; }
@@ -50,7 +50,7 @@
         .ult-box .action-btn { background-color: #1c3559; border-color: #2b5185; }
         .ult-box .action-btn.active { background-color: #c8232c; border-color: #ff4d52; }
         
-        /* 🔥 큰 숫자 크기는 유지하되 마진 최소화 */
+        /* 눈에 확 띄는 큰 숫자 크기 유지 */
         .timer-display { font-size: 19px; font-weight: 900; color: #00ffcc; height: 22px; line-height: 22px; text-align: center; white-space: nowrap; letter-spacing: 0.5px; text-shadow: 0 0 6px rgba(0, 255, 204, 0.4); }
         .timer-display.running { font-size: 21px; color: #ff4d52; text-shadow: 0 0 8px rgba(255, 77, 82, 0.5); font-family: 'Courier New', Courier, monospace; }
         
@@ -62,7 +62,6 @@
 </head>
 <body>
 
-    <!-- 게임 시간 동기화 컨트롤러 -->
     <div class="game-clock-container">
         <span class="game-clock-label">GAME TIME</span>
         <input type="text" class="game-time-input" id="gameClockInput" value="00:00" placeholder="00:00">
@@ -70,7 +69,6 @@
         <button class="clock-btn" onclick="syncGameClock()">동기화</button>
     </div>
 
-    <!-- 모퉁이 알림 메시 -->
     <div class="left-toast" id="leftToast"></div>
 
     <div class="main-wrapper">
@@ -212,12 +210,6 @@
             gameTimeOffset = parseMMSSToSeconds(inputVal);
             if (gameStartTime) gameStartTime = Date.now();
             showLeftToast(`🕒 게임 시간 동기화: ${formatSecondsToMMSS(gameTimeOffset)}`);
-            
-            Object.keys(activeTimers).forEach(key => {
-                const parts = key.split('-');
-                if(parts[1] === 'ult') tickUlt(parts[0]);
-                else tick(parts[0], parseInt(parts[1]));
-            });
         }
 
         function showLeftToast(msg) {
@@ -237,8 +229,8 @@
                 <div class="lane-title">${lane.name}</div>
                 <input type="text" class="champ-input" id="champ-${lane.id}" placeholder="챔피언 검색" onchange="autoFillUlt('${lane.id}')">
                 <div class="options">
-                    <label><input type="checkbox" id="utong-${lane.id}" onchange="onOptionChange('${lane.id}')"> 우통</label>
-                    <label><input type="checkbox" id="shoes-${lane.id}" onchange="onOptionChange('${lane.id}')"> 쿨감신</label>
+                    <label><input type="checkbox" id="utong-${lane.id}"> 우통</label>
+                    <label><input type="checkbox" id="shoes-${lane.id}"> 쿨감신</label>
                 </div>
                 <div class="spell-container">
             `;
@@ -261,14 +253,14 @@
             html += `
                 <div class="slot-box ult-box">
                     <div class="ult-levels">
-                        <label><input type="radio" name="ultlvl-${lane.id}" id="ultlvl-${lane.id}-6" value="6" checked onchange="onOptionChange('${lane.id}')"><span>6</span></label>
-                        <label><input type="radio" name="ultlvl-${lane.id}" id="ultlvl-${lane.id}-11" value="11" onchange="onOptionChange('${lane.id}')"><span>11</span></label>
-                        <label><input type="radio" name="ultlvl-${lane.id}" id="ultlvl-${lane.id}-16" value="16" onchange="onOptionChange('${lane.id}')"><span>16</span></label>
+                        <label><input type="radio" name="ultlvl-${lane.id}" id="ultlvl-${lane.id}-6" value="6" checked><span>6</span></label>
+                        <label><input type="radio" name="ultlvl-${lane.id}" id="ultlvl-${lane.id}-11" value="11"><span>11</span></label>
+                        <label><input type="radio" name="ultlvl-${lane.id}" id="ultlvl-${lane.id}-16" value="16"><span>16</span></label>
                     </div>
                     <div class="select-input-group">
-                        <input type="number" class="ult-cooldown-input" id="ultbase-${lane.id}-6" value="120" onchange="onOptionChange('${lane.id}')">
-                        <input type="number" class="ult-cooldown-input" id="ultbase-${lane.id}-11" value="100" onchange="onOptionChange('${lane.id}')">
-                        <input type="number" class="ult-cooldown-input" id="ultbase-${lane.id}-16" value="80" onchange="onOptionChange('${lane.id}')">
+                        <input type="number" class="ult-cooldown-input" id="ultbase-${lane.id}-6" value="120">
+                        <input type="number" class="ult-cooldown-input" id="ultbase-${lane.id}-11" value="100">
+                        <input type="number" class="ult-cooldown-input" id="ultbase-${lane.id}-16" value="80">
                     </div>
                     <button class="action-btn" id="btn-${lane.id}-ult" onclick="handleUltClick('${lane.id}')">궁극기</button>
                     <div class="timer-display" id="timer-${lane.id}-ult">READY</div>
@@ -302,173 +294,25 @@
             }
         }
 
-        // --- 줄임말 분석 및 자동완성 매핑 엔진 ---
         function autoFillUlt(laneId) {
             const inputField = document.getElementById(`champ-${laneId}`);
             let inputVal = inputField.value.trim().toLowerCase();
             
             if(!inputVal) return;
 
-            // 1. 줄임말 사전에 등록되어 있다면 원본 이름으로 교체
             if (aliasDB[inputVal]) {
                 inputVal = aliasDB[inputVal];
                 inputField.value = inputVal;
             }
 
-            // 2. DB에서 쿨타임 데이터 매핑
             if (championUltDB[inputVal]) {
                 const cooldowns = championUltDB[inputVal];
                 document.getElementById(`ultbase-${laneId}-6`).value = cooldowns[0];
                 document.getElementById(`ultbase-${laneId}-11`).value = cooldowns[1];
                 document.getElementById(`ultbase-${laneId}-16`).value = cooldowns[2];
-                if (activeTimers[`${laneId}-ult`]) tickUlt(laneId);
             }
         }
 
         function onSpellSelectChange(laneId, slotIndex) {
             const select = document.getElementById(`select-${laneId}-${slotIndex}`);
-            const btn = document.getElementById(`btn-${laneId}-${slotIndex}`);
-            if (!activeTimers[`${laneId}-${slotIndex}`]) {
-                btn.innerText = select.value;
-            }
-        }
-
-        function getSpellModifier(hasUtong, hasShoes) {
-            let speed = 0;
-            if (hasUtong) speed += 18;
-            if (hasShoes) speed += 12;
-            return 100 / (100 + speed);
-        }
-
-        function getUltModifier(hasShoes) {
-            let speed = 0;
-            if (hasShoes) speed += 15;
-            return 100 / (100 + speed);
-        }
-
-        function handleSpellClick(laneId, slotIndex) {
-            const timerKey = `${laneId}-${slotIndex}`;
-            if (activeTimers[timerKey]) { 
-                resetTimer(laneId, slotIndex); 
-                return; 
-            }
-            
-            const select = document.getElementById(`select-${laneId}-${slotIndex}`);
-            activeTimers[timerKey] = {
-                type: 'spell',
-                baseSec: spellRegistry[select.value],
-                triggeredAtGameTime: getGameTimeSeconds(),
-                intervalId: null
-            };
-            
-            const btn = document.getElementById(`btn-${laneId}-${slotIndex}`);
-            btn.classList.add('active');
-            
-            tick(laneId, slotIndex);
-            activeTimers[timerKey].intervalId = setInterval(() => tick(laneId, slotIndex), 1000);
-        }
-
-        function handleUltClick(laneId) {
-            const timerKey = `${laneId}-ult`;
-            if (activeTimers[timerKey]) { 
-                resetUltTimer(laneId); 
-                return; 
-            }
-
-            activeTimers[timerKey] = {
-                type: 'ult',
-                triggeredAtGameTime: getGameTimeSeconds(),
-                intervalId: null
-            };
-
-            document.getElementById(`btn-${laneId}-ult`).classList.add('active');
-
-            tickUlt(laneId);
-            activeTimers[timerKey].intervalId = setInterval(() => tickUlt(laneId), 1000);
-        }
-
-        function onOptionChange(laneId) {
-            for (let i = 0; i < 2; i++) {
-                if (activeTimers[`${laneId}-${i}`]) tick(laneId, i);
-            }
-            if (activeTimers[`${laneId}-ult`]) tickUlt(laneId);
-        }
-
-        function tick(laneId, slotIndex) {
-            const timerKey = `${laneId}-${slotIndex}`;
-            const timer = activeTimers[timerKey];
-            if (!timer) return;
-
-            const targetGameTime = getTargetGameTime(laneId, slotIndex, 'spell');
-            const timeLeft = targetGameTime - getGameTimeSeconds();
-
-            const display = document.getElementById(`timer-${laneId}-${slotIndex}`);
-            const btn = document.getElementById(`btn-${laneId}-${slotIndex}`);
-            
-            if (timeLeft <= 0) {
-                resetTimer(laneId, slotIndex);
-                display.innerText = "READY";
-                display.classList.remove('running');
-                display.style.color = "#00ffcc";
-            } else {
-                const orderText = formatToOrderTime(targetGameTime);
-                btn.innerText = orderText; 
-                display.innerText = orderText; 
-                display.classList.add('running');
-            }
-        }
-
-        function tickUlt(laneId) {
-            const timerKey = `${laneId}-ult`;
-            const timer = activeTimers[timerKey];
-            if (!timer) return;
-
-            const targetGameTime = getTargetGameTime(laneId, null, 'ult');
-            const timeLeft = targetGameTime - getGameTimeSeconds();
-
-            const display = document.getElementById(`timer-${laneId}-ult`);
-            const btn = document.getElementById(`btn-${laneId}-ult`);
-            
-            if (timeLeft <= 0) {
-                resetUltTimer(laneId);
-                display.innerText = "READY";
-                display.classList.remove('running');
-                display.style.color = "#00ffcc";
-            } else {
-                const orderText = formatToOrderTime(targetGameTime);
-                btn.innerText = orderText;
-                display.innerText = orderText;
-                display.classList.add('running');
-            }
-        }
-
-        function resetTimer(laneId, slotIndex) {
-            const timerKey = `${laneId}-${slotIndex}`;
-            if (activeTimers[timerKey] && activeTimers[timerKey].intervalId) clearInterval(activeTimers[timerKey].intervalId);
-            delete activeTimers[timerKey];
-
-            const btn = document.getElementById('btn-' + laneId + '-' + slotIndex);
-            btn.classList.remove('active');
-            const display = document.getElementById('timer-' + laneId + '-' + slotIndex);
-            display.innerText = "READY";
-            display.classList.remove('running');
-            display.style.color = "#00ffcc";
-            onSpellSelectChange(laneId, slotIndex);
-        }
-
-        function resetUltTimer(laneId) {
-            const timerKey = `${laneId}-ult`;
-            if (activeTimers[timerKey] && activeTimers[timerKey].intervalId) clearInterval(activeTimers[timerKey].intervalId);
-            delete activeTimers[timerKey];
-
-            const btn = document.getElementById(`btn-${laneId}-ult`);
-            btn.classList.remove('active');
-            btn.innerText = "궁극기";
-            const display = document.getElementById(`timer-${laneId}-ult`);
-            display.innerText = "READY";
-            display.classList.remove('running');
-            display.style.color = "#00ffcc";
-        }
-    </script>
-</body>
-</html>
+            const btn = document.getElementById(`btn-${laneId}-${slot
