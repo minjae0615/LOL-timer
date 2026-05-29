@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>롤 스펠 체크 - 사운드 에디션</title>
+    <title>롤 스펠 체크 - 부드러운 음성 에디션</title>
     <style>
         html, body { height: 100%; margin: 0; padding: 0; background-color: #0b0b0e; }
         body { font-family: 'Malgun Gothic', sans-serif; color: #f0e6d2; display: flex; flex-direction: column; justify-content: center; align-items: center; user-select: none; overflow: hidden; position: relative; }
         
         /* 상단 시간설정 및 옵션 */
-        .game-clock-container { position: absolute; top: 10px; left: 15px; background: rgba(26, 26, 31, 0.95); padding: 6px 12px; border-radius: 6px; border: 1px solid #43434d; display: flex; align-items: center; gap: 10px; z-index: 20; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .game-clock-container { position: absolute; top: 10px; left: 15px; background: rgba(26, 26, 31, 0.95); padding: 6px 12px; border-radius: 6px; border: 1px solid #43434d; display: flex; align-items: center; gap: 12px; z-index: 20; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
         .game-clock-label { font-size: 11px; color: #c8aa6e; font-weight: bold; letter-spacing: 0.5px; }
         .game-time-input { width: 55px; background: #1a1a22; color: #c8aa6e; border: 1px solid #5b5b66; border-radius: 4px; font-size: 13px; text-align: center; font-weight: bold; padding: 2px; }
         .clock-btn { padding: 3px 8px; font-size: 11px; font-weight: bold; border: none; border-radius: 4px; cursor: pointer; background: #323a4e; color: #f0e6d2; border: 1px solid #46526e; }
@@ -17,9 +17,15 @@
         .clock-btn.reset { background: #495057; color: #fff; border: 1px solid #5a6268; }
         .clock-btn.reset:hover { background: #5a6268; }
 
-        /* 음성 설정 체크박스 */
-        .voice-opt-label { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #c89b3c; font-weight: bold; cursor: pointer; border-left: 1px solid #43434d; padding-left: 10px; margin-left: 4px; }
+        /* 음성 컨트롤 영역 */
+        .voice-control-group { display: flex; align-items: center; gap: 10px; border-left: 1px solid #43434d; padding-left: 12px; margin-left: 4px; }
+        .voice-opt-label { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #c89b3c; font-weight: bold; cursor: pointer; }
         .voice-opt-label input { cursor: pointer; margin: 0; }
+        
+        /* 볼륨 조절 슬라이더 */
+        .volume-container { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #a0957f; font-weight: bold; }
+        .volume-slider { width: 70px; accent-color: #c8aa6e; cursor: pointer; height: 4px; background: #323a4e; border-radius: 2px; outline: none; }
+        .volume-text { width: 28px; text-align: right; font-family: monospace; color: #c8aa6e; }
 
         /* 알림 팝업 */
         .left-toast { position: absolute; top: 55px; left: 15px; color: #c8aa6e; font-size: 12px; font-weight: bold; background: rgba(10,10,15,0.9); padding: 4px 10px; border-radius: 4px; border-left: 4px solid #c8aa6e; pointer-events: none; opacity: 0; transition: opacity 0.2s; z-index: 10; }
@@ -36,7 +42,7 @@
         .order-summary-title { font-size: 13px; font-weight: bold; color: #c8aa6e; background: rgba(200, 170, 110, 0.08); padding: 6px; border-radius: 4px; text-align: center; letter-spacing: 0.5px; border-bottom: 1px solid rgba(200, 170, 110, 0.2); }
         .order-summary-content { font-size: 13px; font-weight: bold; color: #f0e6d2; flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
         
-        /* 깜빡임 없는 아이템 스타일 */
+        /* 아이템 스타일 */
         .order-item { display: flex; justify-content: space-between; align-items: center; background: #1a1a24; padding: 7px 10px; border-radius: 4px; border: 1px solid #2c2c3d; letter-spacing: 0.5px; }
         .order-item .item-text { color: #e4e4e9; }
         .order-item .item-time { color: #c8aa6e; font-family: 'Courier New', monospace; font-weight: 900; }
@@ -89,9 +95,17 @@
         <button class="clock-btn" id="gameClockToggleBtn" onclick="toggleGameClock()">시작</button>
         <button class="clock-btn reset" onclick="resetAllData()">전체 초기화</button>
         
-        <label class="voice-opt-label">
-            <input type="checkbox" id="voiceAlertToggle" checked> 알림음 재생
-        </label>
+        <!-- 🔊 음성 컨트롤 영역: 처음엔 checked를 빼서 꺼진 상태로 시작하게 수정 -->
+        <div class="voice-control-group">
+            <label class="voice-opt-label">
+                <input type="checkbox" id="voiceAlertToggle" onchange="onVoiceToggleChange()"> 음성 알림 활성화
+            </label>
+            <div class="volume-container">
+                <span>볼륨</span>
+                <input type="range" class="volume-slider" id="voiceVolume" min="0" max="100" value="70" oninput="updateVolumeText()">
+                <span class="volume-text" id="volumeVal">70%</span>
+            </div>
+        </div>
     </div>
 
     <div class="left-toast" id="leftToast"></div>
@@ -252,6 +266,23 @@
             }
         }
 
+        function updateVolumeText() {
+            const vol = document.getElementById('voiceVolume').value;
+            document.getElementById('volumeVal').innerText = `${vol}%`;
+        }
+
+        function onVoiceToggleChange() {
+            const isEnabled = document.getElementById('voiceAlertToggle').checked;
+            if(isEnabled) {
+                showLeftToast("🔊 음성 알림이 활성화되었습니다.");
+                // 사용자가 체크를 직접 눌렀을 때, 오디오 브라우저 락을 풀어주기 위한 빈 스피치 전송
+                const dummy = new SpeechSynthesisUtterance("");
+                window.speechSynthesis.speak(dummy);
+            } else {
+                showLeftToast("🔇 음성 알림이 비활성화되었습니다.");
+            }
+        }
+
         function resetAllData() {
             if (gameClockInterval) {
                 clearInterval(gameClockInterval);
@@ -294,7 +325,7 @@
             window.ltTimeout = setTimeout(() => t.style.opacity = '0', 2000);
         }
 
-        // 레이아웃 생성기
+        // 레이아웃 구성기
         const app = document.getElementById('app');
         lanes.forEach(lane => {
             const row = document.createElement('div');
@@ -408,16 +439,26 @@
             return 100 / (100 + speed);
         }
 
-        // 🎵 [개선 패치] 기계식 봇 목소리 완전 제거! 오픈 주소형 경쾌한 애니메이션 알림음 재생기
-        function playLiveAudioAlert() {
+        // 🗣️ [개선 패치] 자연스럽고 조절 가능한 부드러운 순정 TTS 브리핑 엔진
+        function speakOrderText(text) {
             const isVoiceEnabled = document.getElementById('voiceAlertToggle').checked;
-            if (!isVoiceEnabled) return;
+            if (!isVoiceEnabled) return; // 체크 해제 상태면 절대 소리 안 남
 
-            // 상시 열려있는 무료 오픈 라이브 오디오 주소 연동 (경쾌한 띵동 알림음)
-            const audioUrl = "https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg";
-            const audio = new Audio(audioUrl);
-            audio.volume = 0.8;
-            audio.play().catch(e => console.log("사운드 재생 실패:", e));
+            // 기존에 말하고 있는 게 있다면 겹치지 않게 취소
+            window.speechSynthesis.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'ko-KR';
+
+            // 🎚️ 볼륨 설정 반영 (사용자가 설정한 0 ~ 100 값을 0.0 ~ 1.0으로 매핑)
+            const volumeSliderVal = parseInt(document.getElementById('voiceVolume').value) || 0;
+            utterance.volume = volumeSliderVal / 100;
+
+            // 🏃‍♂️ 뚝뚝 끊김 방지 패치: 한국어 대화 호흡에 가장 부드러운 속도(0.95 ~ 1.0) 조절
+            utterance.rate = 0.98; 
+            utterance.pitch = 1.0; 
+
+            window.speechSynthesis.speak(utterance);
         }
 
         function handleSpellClick(laneId, slotIndex) {
@@ -470,7 +511,7 @@
             btn.innerText = formatToOrderTime(targetGameTime);
         }
 
-        // 깜빡임 방지용 실시간 안전 DOM 관리기
+        // DOM 관리기
         function updateOrderSummaryView(newList) {
             const summaryBox = document.getElementById('orderSummaryContent');
             
@@ -539,9 +580,13 @@
                     if(shortName === '텔포') shortName = '텔';
                     if(shortName === '궁극기') shortName = '궁';
 
-                    // 20초 전 도달 시 깔끔한 고품질 알림음 즉시 재생 (기계음 차단)
+                    // 🎯 정확히 20초 남았을 때 부드러운 자연어 오더 전달
                     if (timeLeft <= 20 && !timer.playedAlert) {
-                        playLiveAudioAlert();
+                        const krLane = laneKrNameDB[timer.lane] || timer.lane;
+                        const spellTxt = (timer.name === '궁극기') ? '궁' : timer.name;
+                        
+                        // 문장 조사를 다듬어 훨씬 인간이 말하는 대사처럼 튜닝
+                        speakOrderText(`${krLane} ${spellTxt} 이십초 전입니다.`);
                         timer.playedAlert = true;
                     }
 
