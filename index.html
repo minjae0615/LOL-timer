@@ -7,6 +7,38 @@
     <style>
         html, body { height: 100%; margin: 0; padding: 0; background-color: #0b0b0e; }
         body { font-family: 'Malgun Gothic', sans-serif; color: #f0e6d2; display: flex; flex-direction: column; justify-content: center; align-items: center; user-select: none; overflow: hidden; position: relative; }
+
+        <style>
+    /* 전체 배경 밝기 낮추기 */
+    html, body { 
+        height: 100%; 
+        margin: 0; 
+        padding: 0; 
+        background-color: #0b0b0e; /* 더 어두운 배경으로 눈 피로 감소 */
+    }
+
+    /* 글자 가독성 향상 */
+    body { 
+        color: #e0e0e0; /* 완전한 흰색보다 눈이 편안한 밝은 회색 */
+        font-family: 'Malgun Gothic', sans-serif; 
+    }
+
+    /* 00:00 시간 표기 디자인 */
+    .timer-display { 
+        font-family: 'Consolas', monospace; /* 숫자 간격이 일정하여 가독성이 좋은 폰트 */
+        font-size: 14px; 
+        font-weight: bold; 
+        color: #ffffff; /* 흰색 글자 적용 */
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.3); /* 은은한 빛 번짐 효과로 가독성 강화 */
+    }
+
+    /* 라인별 테두리 디자인 */
+    .lane-TOP { border: 2px solid #00A86B !important; }
+    .lane-JGL { border: 2px solid #C2185B !important; }
+    .lane-MID { border: 2px solid #0057FF !important; }
+    .lane-ADC { border: 2px solid #FF7A00 !important; }
+    .lane-SUP { border: 2px solid #FFD600 !important; }
+    </style>
         
         /* 상단 시간설정 및 옵션 */
         .game-clock-container { position: absolute; top: 10px; left: 15px; background: rgba(26, 26, 31, 0.95); padding: 6px 12px; border-radius: 6px; border: 1px solid #43434d; display: flex; align-items: center; gap: 12px; z-index: 20; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
