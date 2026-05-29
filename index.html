@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LoL 인게임 타임스탬프 스펠 체크 (버그 수정본)</title>
+    <title>LoL 인게임 타임스탬프 스펠 체크 (타이머 실시간 수정본)</title>
     <style>
         html, body { height: 100%; margin: 0; padding: 0; background-color: #0f0f12; }
         body { font-family: 'Malgun Gothic', sans-serif; color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center; user-select: none; overflow: hidden; position: relative; }
         
-        /* [좌측 상단] 게임 시간 컨트롤러 - 슬림화 및 버튼 추가 */
+        /* [좌측 상단] 게임 시간 컨트롤러 */
         .game-clock-container { position: absolute; top: 10px; left: 15px; background: rgba(20, 20, 25, 0.95); padding: 6px 10px; border-radius: 6px; border: 1px solid #4c4c55; display: flex; align-items: center; gap: 6px; z-index: 20; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
         .game-clock-label { font-size: 11px; color: #ffcd00; font-weight: bold; }
         .game-time-input { width: 55px; background: #25252b; color: #ffcd00; border: 1px solid #666; border-radius: 4px; font-size: 13px; text-align: center; font-weight: bold; padding: 2px; }
@@ -20,11 +20,11 @@
         /* 알림창 */
         .left-toast { position: absolute; top: 55px; left: 15px; color: #ff9900; font-size: 12px; font-weight: bold; background: rgba(0,0,0,0.85); padding: 4px 10px; border-radius: 4px; border-left: 4px solid #ff9900; pointer-events: none; opacity: 0; transition: opacity 0.2s; z-index: 10; }
 
-        /* 메인 컨테이너 - 세로 여백 줄임 */
+        /* 메인 컨테이너 */
         .main-wrapper { background-color: #16161a; padding: 8px 12px; border-radius: 12px; border: 1px solid #323238; box-shadow: 0 15px 40px rgba(0,0,0,0.6); width: 98%; max-width: 860px; box-sizing: border-box; margin-top: 35px; }
         .flex-container { display: flex; flex-direction: column; gap: 6px; }
         
-        /* 라인별 가로 행 - 세로 패딩 압축 */
+        /* 라인별 가로 행 */
         .lane-row { display: flex; align-items: center; background-color: #1f1f25; border: 1px solid #3c3c46; border-radius: 6px; padding: 4px 12px; gap: 10px; min-width: 0; }
         .lane-title { width: 45px; font-size: 15px; font-weight: 900; color: #ffcd00; text-align: center; flex-shrink: 0; }
         
@@ -45,14 +45,14 @@
         .spell-select { width: 100%; padding: 2px; background: #32323a; color: #fff; border: 1px solid #555; border-radius: 4px; font-size: 12px; cursor: pointer; min-width: 0; font-weight: bold; }
         .ult-cooldown-input { width: 32%; max-width: 38px; padding: 2px 1px; background: #222228; color: #ffcd00; border: 1px solid #555; border-radius: 4px; font-size: 11px; text-align: center; font-weight: bold; }
         
-        /* 버튼 스타일 - 높이 슬림하게 */
+        /* 위쪽 버튼 스타일 - 온전한 미래 고정 시간 */
         .action-btn { width: 100%; padding: 4px 0; font-size: 12px; font-weight: bold; border: none; border-radius: 4px; cursor: pointer; background-color: #2e354d; color: #f0e6d2; border: 1px solid #464f73; transition: all 0.1s; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
         .action-btn:hover { background-color: #3e4766; }
         .action-btn.active { background-color: #c8232c; color: white; border-color: #ff4d52; font-size: 13px; font-weight: 900; }
         .ult-box .action-btn { background-color: #1c3559; border-color: #2b5185; }
         .ult-box .action-btn.active { background-color: #c8232c; border-color: #ff4d52; }
         
-        /* 눈에 확 띄는 큰 숫자 크기 유지 */
+        /* 아래쪽 텍스트 스타일 - 실시간 카운트다운 */
         .timer-display { font-size: 19px; font-weight: 900; color: #00ffcc; height: 22px; line-height: 22px; text-align: center; white-space: nowrap; letter-spacing: 0.5px; text-shadow: 0 0 6px rgba(0, 255, 204, 0.4); }
         .timer-display.running { font-size: 21px; color: #ff4d52; text-shadow: 0 0 8px rgba(255, 77, 82, 0.5); font-family: 'Courier New', Courier, monospace; }
         
@@ -85,7 +85,7 @@
         let gameTimeOffset = 0;   
         let gameClockInterval = null;
 
-        // 원본 챔피언 궁극기 데이터베이스 (크로스체크 완료: 갱플랭크 누락 버그 해결)
+        // 원본 챔피언 궁극기 데이터베이스
         const championUltDB = {
             '가렌': [120, 100, 80], '갈리오': [200, 180, 160], '갱플랭크': [180, 160, 140], '그라가스': [120, 100, 80], '그레이브즈': [120, 90, 60],
             '나르': [90, 70, 50], '나미': [120, 110, 100], '노틸러스': [140, 110, 80], '녹턴': [140, 115, 90],
@@ -217,9 +217,7 @@
             showLeftToast(`🕒 게임 시간 동기화: ${formatSecondsToMMSS(gameTimeOffset)}`);
         }
 
-        // 🔥 [추가 기능] 시스템 전체 초기화 함수
         function resetAllData() {
-            // 1. 게임 타이머 초기화 및 중지
             if (gameClockInterval) {
                 clearInterval(gameClockInterval);
                 gameClockInterval = null;
@@ -232,26 +230,18 @@
             toggleBtn.classList.remove('running');
             document.getElementById('gameClockInput').value = "00:00";
 
-            // 2. 실행 중인 타이머 객체 비우기
             activeTimers = {};
 
-            // 3. UI 컴포넌트 전체 리셋
             lanes.forEach(lane => {
-                // 체크박스 해제
                 document.getElementById(`utong-${lane.id}`).checked = false;
                 document.getElementById(`shoes-${lane.id}`).checked = false;
-                
-                // 챔피언명 입력칸 초기화
                 document.getElementById(`champ-${lane.id}`).value = "";
 
-                // 스펠 리셋
                 for (let i = 0; i < 2; i++) {
                     resetTimerUI(lane.id, i);
                 }
-                // 궁극기 리셋
                 resetUltTimerUI(lane.id);
                 
-                // 라디오 버튼 기본값(6레벨) 설정 및 기본 쿨타임 복구
                 document.getElementById(`ultlvl-${lane.id}-6`).checked = true;
                 document.getElementById(`ultbase-${lane.id}-6`).value = 120;
                 document.getElementById(`ultbase-${lane.id}-11`).value = 100;
@@ -324,6 +314,7 @@
             onSpellSelectChange(lane.id, 1);
         });
 
+        // 타겟 완료 시간(인게임 기준 미래 초) 반환 함수
         function getTargetGameTime(laneId, slotIndex, type) {
             if (type === 'spell') {
                 const timer = activeTimers[`${laneId}-${slotIndex}`];
@@ -391,13 +382,20 @@
             }
             
             const select = document.getElementById(`select-${laneId}-${slotIndex}`);
+            const currentSeconds = getGameTimeSeconds();
+            
             activeTimers[timerKey] = {
                 type: 'spell',
                 baseSec: spellRegistry[select.value],
-                triggeredAtGameTime: getGameTimeSeconds()
+                triggeredAtGameTime: currentSeconds
             };
             
-            document.getElementById(`btn-${laneId}-${slotIndex}`).classList.add('active');
+            const btn = document.getElementById(`btn-${laneId}-${slotIndex}`);
+            btn.classList.add('active');
+            
+            // 클릭한 직후 최초 미래 고정 목표 시간 셋팅 (예: 0439)
+            const targetGameTime = getTargetGameTime(laneId, slotIndex, 'spell');
+            btn.innerText = formatToOrderTime(targetGameTime);
         }
 
         function handleUltClick(laneId) {
@@ -407,16 +405,24 @@
                 return; 
             }
 
+            const currentSeconds = getGameTimeSeconds();
             activeTimers[timerKey] = {
                 type: 'ult',
-                triggeredAtGameTime: getGameTimeSeconds()
+                triggeredAtGameTime: currentSeconds
             };
 
-            document.getElementById(`btn-${laneId}-ult`).classList.add('active');
+            const btn = document.getElementById(`btn-${laneId}-ult`);
+            btn.classList.add('active');
+
+            // 클릭한 직후 최초 미래 고정 목표 시간 셋팅
+            const targetGameTime = getTargetGameTime(laneId, null, 'ult');
+            btn.innerText = formatToOrderTime(targetGameTime);
         }
 
-        // --- ⚙️ 실시간 타이머 루프 ---
+        // --- ⚙️ 실시간 타이머 핵심 루프 엔진 (버그 수정 완료) ---
         setInterval(() => {
+            const currentSeconds = getGameTimeSeconds();
+
             Object.keys(activeTimers).forEach(key => {
                 const parts = key.split('-');
                 const laneId = parts[0];
@@ -433,15 +439,19 @@
                     targetGameTime = getTargetGameTime(laneId, parseInt(type), 'spell');
                 }
 
-                const timeLeft = targetGameTime - getGameTimeSeconds();
+                // 쿨타임 남은 시간 실시간 계산
+                const timeLeft = targetGameTime - currentSeconds;
 
                 if (timeLeft <= 0) {
+                    // 시간 만료 시 초기화
                     if (type === 'ult') resetUltTimer(laneId);
                     else resetTimer(laneId, parseInt(type));
                 } else {
-                    const orderText = formatToOrderTime(targetGameTime);
-                    btn.innerText = orderText; 
-                    display.innerText = orderText; 
+                    // [상단 버튼] 온전한 미래 고정 시각 유지
+                    btn.innerText = formatToOrderTime(targetGameTime); 
+                    
+                    // [하단 텍스트] 실시간으로 줄어드는 카운트다운 구현 
+                    display.innerText = formatToOrderTime(timeLeft); 
                     display.classList.add('running');
                 }
             });
