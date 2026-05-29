@@ -30,75 +30,85 @@
         /* 알림 팝업 */
         .left-toast { position: absolute; top: 55px; left: 15px; color: #c8aa6e; font-size: 12px; font-weight: bold; background: rgba(10,10,15,0.9); padding: 4px 10px; border-radius: 4px; border-left: 4px solid #c8aa6e; pointer-events: none; opacity: 0; transition: opacity 0.2s; z-index: 10; }
 
-        /* 레이아웃 구조 개편 (조금 더 왼쪽으로 밀어붙임) */
-        .layout-container { display: flex; align-items: stretch; gap: 12px; width: 99%; max-width: 1300px; box-sizing: border-box; padding-left: 5px; }
+        /* 레이아웃 구조 (좌측 정렬 최적화) */
+        .layout-container { display: flex; align-items: stretch; gap: 16px; width: 99%; max-width: 1400px; box-sizing: border-box; padding-left: 5px; }
 
         /* 좌측 메인판 */
-        .main-wrapper { background-color: #121217; padding: 8px 12px; border-radius: 12px; border: 1px solid #262631; box-shadow: 0 15px 40px rgba(0,0,0,0.7); flex: 2.2; min-width: 0; box-sizing: border-box; }
-        .flex-container { display: flex; flex-direction: column; gap: 6px; }
+        .main-wrapper { background-color: #121217; padding: 10px; border-radius: 12px; border: 1px solid #262631; box-shadow: 0 15px 40px rgba(0,0,0,0.7); flex: 2.1; min-width: 0; box-sizing: border-box; }
+        .flex-container { display: flex; flex-direction: column; gap: 10px; } /* 행 간격 넓힘 */
         
         /* 우측 이원화 브리핑 컨테이너 영역 */
-        .right-briefing-zone { flex: 1.8; display: flex; gap: 10px; min-width: 440px; box-sizing: border-box; }
+        .right-briefing-zone { flex: 1.9; display: flex; gap: 12px; min-width: 520px; box-sizing: border-box; }
         
         /* 우측 각각의 오더 브리핑 보드 스타일 */
-        .order-summary-box { flex: 1; background: #111115; border: 1px solid #3c3c4d; border-radius: 12px; padding: 12px; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 4px 25px rgba(0,0,0,0.5); }
+        .order-summary-box { flex: 1; background: #111115; border: 2px solid #3c3c4d; border-radius: 12px; padding: 14px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 4px 25px rgba(0,0,0,0.5); }
         .order-summary-box.spell-box-border { border-color: #4a5a73; }
         .order-summary-box.ult-box-border { border-color: #7d5b38; }
         
-        .order-summary-title { font-size: 13px; font-weight: bold; text-align: center; letter-spacing: 0.5px; padding: 6px; border-radius: 4px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .order-summary-title { font-size: 16px; font-weight: 900; text-align: center; letter-spacing: 0.5px; padding: 8px; border-radius: 4px; border-bottom: 2px solid rgba(255,255,255,0.1); }
         .spell-box-border .order-summary-title { color: #8ba2c4; background: rgba(139, 162, 196, 0.08); }
         .ult-box-border .order-summary-title { color: #c8aa6e; background: rgba(200, 170, 110, 0.08); }
         
-        .order-summary-content { font-size: 13px; font-weight: bold; color: #f0e6d2; flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+        .order-summary-content { font-size: 16px; font-weight: bold; color: #f0e6d2; flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
         
-        /* 아이템 스타일 및 애니메이션 효과 */
-        .order-item { display: flex; justify-content: space-between; align-items: center; background: #1a1a24; padding: 7px 10px; border-radius: 4px; border: 1px solid #2c2c3d; letter-spacing: 0.5px; }
-        .order-item .item-text { font-weight: bold; }
-        .order-item .item-time { color: #ffffff; font-family: 'Courier New', monospace; font-weight: 900; background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 3px; }
-        .order-summary-content .empty-msg { color: #5b5b66; font-size: 12px; background: none; border: none; text-align: center; padding-top: 60px; line-height: 1.6; }
+        /* 브리핑 아이템 스타일 및 애니메이션 효과 (글자 대폭 확대 및 테두리 부여) */
+        .order-item { display: flex; justify-content: space-between; align-items: center; background: #171722; padding: 10px 14px; border-radius: 6px; box-sizing: border-box; }
+        .order-item .item-text { font-size: 17px; font-weight: 900; letter-spacing: 0.5px; }
+        .order-item .item-time { font-size: 19px; color: #ffffff; font-family: 'Courier New', monospace; font-weight: 900; background: rgba(0,0,0,0.5); padding: 3px 8px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.15); }
+        .order-summary-content .empty-msg { color: #5b5b66; font-size: 14px; background: none; border: none; text-align: center; padding-top: 80px; line-height: 1.6; font-weight: normal; }
 
-        /* 라인별 행 디자인 */
-        .lane-row { display: flex; align-items: center; background-color: #16161f; border: 1px solid #2a2a38; border-radius: 6px; padding: 4px 12px; gap: 10px; min-width: 0; }
-        .lane-title { width: 45px; font-size: 14px; font-weight: 900; text-align: center; flex-shrink: 0; letter-spacing: 0.5px; padding: 3px 0; border-radius: 4px; }
+        /* 라인별 행 디자인 (테두리 두께 강화) */
+        .lane-row { display: flex; align-items: center; background-color: #16161f; border: 2px solid #2a2a38; border-radius: 8px; padding: 6px 12px; gap: 10px; min-width: 0; }
+        .lane-title { width: 50px; font-size: 16px; font-weight: 900; text-align: center; flex-shrink: 0; letter-spacing: 0.5px; padding: 4px 0; border-radius: 4px; }
         
-        /* 라인별 전용 시그니처 색상 매핑 (메인 판 라인 타이틀 배경색) */
-        .lane-row.lane-top .lane-title { color: #fff; background-color: #27ae60; }
-        .lane-row.lane-jgl .lane-title { color: #fff; background-color: #8e44ad; }
-        .lane-row.lane-mid .lane-title { color: #fff; background-color: #2980b9; }
-        .lane-row.lane-adc .lane-title { color: #fff; background-color: #c0392b; }
+        /* 라인별 전용 색상 및 테두리 색상 매핑 매트릭스 (절대 겹치지 않는 고대비 세팅) */
+        .lane-row.lane-top { border-color: #2ecc71; box-shadow: inset 0 0 5px rgba(46, 204, 113, 0.2); }
+        .lane-row.lane-top .lane-title { color: #fff; background-color: #2ecc71; }
+
+        .lane-row.lane-jgl { border-color: #9b59b6; box-shadow: inset 0 0 5px rgba(155, 89, 182, 0.2); }
+        .lane-row.lane-jgl .lane-title { color: #fff; background-color: #9b59b6; }
+
+        .lane-row.lane-mid { border-color: #3498db; box-shadow: inset 0 0 5px rgba(52, 152, 219, 0.2); }
+        .lane-row.lane-mid .lane-title { color: #fff; background-color: #3498db; }
+
+        .lane-row.lane-adc { border-color: #e74c3c; box-shadow: inset 0 0 5px rgba(231, 76, 60, 0.2); }
+        .lane-row.lane-adc .lane-title { color: #fff; background-color: #e74c3c; }
+
+        .lane-row.lane-sup { border-color: #f1c40f; box-shadow: inset 0 0 5px rgba(241, 196, 15, 0.2); }
         .lane-row.lane-sup .lane-title { color: #111; background-color: #f1c40f; }
 
         /* 챔피언 검색 */
-        .champ-input { width: 80px; padding: 4px; background: #22222b; color: #fff; border: 1px solid #444452; border-radius: 4px; font-size: 12px; text-align: center; font-weight: bold; flex-shrink: 0; }
+        .champ-input { width: 85px; padding: 5px; background: #22222b; color: #fff; border: 1px solid #444452; border-radius: 4px; font-size: 13px; text-align: center; font-weight: bold; flex-shrink: 0; }
         .champ-input:focus { border-color: #c8aa6e; outline: none; }
         
         /* 특성 체크박스 */
-        .options { display: flex; flex-direction: column; gap: 2px; font-size: 11px; font-weight: bold; color: #888; background: #0d0d12; padding: 4px 6px; border-radius: 4px; width: 70px; flex-shrink: 0; box-sizing: border-box; }
-        .options label { display: flex; align-items: center; gap: 3px; cursor: pointer; white-space: nowrap; }
+        .options { display: flex; flex-direction: column; gap: 4px; font-size: 12px; font-weight: bold; color: #aaa; background: #0d0d12; padding: 6px 8px; border-radius: 4px; width: 75px; flex-shrink: 0; box-sizing: border-box; border: 1px solid #222; }
+        .options label { display: flex; align-items: center; gap: 4px; cursor: pointer; white-space: nowrap; }
+        .options input[type="checkbox"] { transform: scale(1.1); margin: 0; cursor: pointer; }
         
         /* 스펠 및 궁 슬롯 */
-        .spell-container { display: flex; gap: 6px; flex-grow: 1; align-items: center; min-width: 0; }
-        .slot-box { text-align: center; background: #0e0e12; padding: 4px 6px; border-radius: 5px; border: 1px solid #22222a; display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
-        .ult-box { flex: 1.2; background: #121926; border-color: #202d42; }
+        .spell-container { display: flex; gap: 8px; flex-grow: 1; align-items: center; min-width: 0; }
+        .slot-box { text-align: center; background: #0e0e12; padding: 5px 6px; border-radius: 6px; border: 1px solid #252533; display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0; }
+        .ult-box { flex: 1.2; background: #121926; border-color: #24354f; }
         
         .select-input-group { display: flex; gap: 3px; justify-content: center; width: 100%; }
-        .spell-select { width: 100%; padding: 2px; background: #282830; color: #f0e6d2; border: 1px solid #444; border-radius: 4px; font-size: 12px; cursor: pointer; min-width: 0; font-weight: bold; }
+        .spell-select { width: 100%; padding: 3px; background: #282830; color: #f0e6d2; border: 1px solid #444; border-radius: 4px; font-size: 13px; cursor: pointer; min-width: 0; font-weight: bold; text-align: center; }
         .spell-select:disabled { opacity: 0.5; cursor: not-allowed; }
         .ult-cooldown-input { width: 32%; max-width: 38px; padding: 2px 1px; background: #181822; color: #c8aa6e; border: 1px solid #444; border-radius: 4px; font-size: 11px; text-align: center; font-weight: bold; }
         
         /* 버튼 디자인 */
-        .action-btn { width: 100%; padding: 4px 0; font-size: 12px; font-weight: bold; border: none; border-radius: 4px; cursor: pointer; background-color: #1e232a; color: #a0957f; border: 1px solid #3c3c41; transition: all 0.1s; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+        .action-btn { width: 100%; padding: 5px 0; font-size: 13px; font-weight: bold; border: none; border-radius: 4px; cursor: pointer; background-color: #1e232a; color: #a0957f; border: 1px solid #3c3c41; transition: all 0.1s; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
         .action-btn:hover { background-color: #2a3039; color: #f0e6d2; }
-        .action-btn.active { background-color: #5b1a1e; color: #ff9999; border-color: #8c2d32; font-size: 12px; font-weight: bold; }
+        .action-btn.active { background-color: #5b1a1e; color: #ff9999; border-color: #8c2d32; font-size: 13px; font-weight: bold; }
         .ult-box .action-btn { background-color: #1a2436; border-color: #293850; color: #8ba2c4; }
         .ult-box .action-btn.active { background-color: #5b1a1e; border-color: #8c2d32; color: #ff9999; }
         
-        /* 타이머 텍스트 색상 */
-        .timer-display { font-size: 18px; font-weight: bold; color: #46a374; height: 22px; line-height: 22px; text-align: center; white-space: nowrap; letter-spacing: 0.5px; }
-        .timer-display.running { color: #d97836; font-family: 'Courier New', Courier, monospace; font-weight: 900; }
+        /* 메인 판 타이머 텍스트 색상 */
+        .timer-display { font-size: 19px; font-weight: bold; color: #2ecc71; height: 24px; line-height: 24px; text-align: center; white-space: nowrap; letter-spacing: 0.5px; }
+        .timer-display.running { color: #e67e22; font-family: 'Courier New', Courier, monospace; font-weight: 900; }
         
         /* 궁 레벨 선택 */
-        .ult-levels { display: flex; justify-content: space-between; font-size: 10px; font-weight: bold; background: #09090d; padding: 2px 4px; border-radius: 4px; width: 100%; box-sizing: border-box; border: 1px solid #22222a; }
+        .ult-levels { display: flex; justify-content: space-between; font-size: 11px; font-weight: bold; background: #09090d; padding: 2px 4px; border-radius: 4px; width: 100%; box-sizing: border-box; border: 1px solid #22222a; }
         .ult-levels label { display: flex; align-items: center; gap: 2px; cursor: pointer; color: #666; }
         .ult-levels input[type="radio"]:checked + span, .ult-levels label:has(input:checked) { color: #c8aa6e; }
     </style>
@@ -126,11 +136,14 @@
     <div class="left-toast" id="leftToast"></div>
 
     <div class="layout-container">
+        <!-- 1. 좌측 메인판 영역 -->
         <div class="main-wrapper">
             <div class="flex-container" id="app"></div>
         </div>
 
+        <!-- 2. 우측 이원화 브리핑 영역 -->
         <div class="right-briefing-zone">
+            <!-- 스펠 브리핑 전용 칸 -->
             <div class="order-summary-box spell-box-border">
                 <div class="order-summary-title">스펠 브리핑 뷰</div>
                 <div class="order-summary-content" id="spellSummaryContent">
@@ -138,6 +151,7 @@
                 </div>
             </div>
 
+            <!-- 궁극기 브리핑 전용 칸 -->
             <div class="order-summary-box ult-box-border">
                 <div class="order-summary-title">궁극기 브리핑 뷰</div>
                 <div class="order-summary-content" id="ultSummaryContent">
@@ -198,11 +212,11 @@
             '그라': '그라가스', '그브': '그레이브즈', '노틸': '노틸러스', '녹턴': '녹턴', '다리': '다리우스', '다이': '다이애나',
             '드레': '드레이븐', '레오': '레오나', '레넥': '레넥톤', '르블': '르블랑', '리산': '리산드라', '마이': '마스터이', 
             '마오': '마오카이', '말자': '말자하', '말파': '말파이트', '모데': '모데카이저', '모르': '모르가나', '문도': '문도박사', 
-            '미포': '미스포츈', '바루': '바루스', '베이': '베이가', '볼리': '볼리베어', '브라움': '브라움', '빅토': '빅토르', 
+            '미포': '미스포츈', '바드': '바드', '바루': '바루스', '베이': '베이가', '볼리': '볼리베어', '브라움': '브라움', '빅토': '빅토르', 
             '사이': '사이온', '사일': '사일러스', '세라': '세라핀', '세주': '세주아니', '소라': '소라카', '스웨': '스웨인', 
             '스카': '스카너', '시비': '시비르', '짜오': '신짜오', '신짜': '신짜오', '신드': '신드라', '쓰레': '쓰레쉬', 
             '아솔': '아우렐리온솔', '아지': '아지르', '아칼': '아칼리', '아크': '아크샨', '아트': '아트록스', '아펠': '아펠리오스', 
-            '알리': '알리스타', '애니': '애니비아', '오리': '오리아나', '올라': '오라프', '우고': '우고트', '이렐': '이렐리아', 
+            '알리': '알리스타', '애니': '애니비아', '오리': '오리아나', '올라': '오라프', '요네': '요네', '요릭': '요릭', '우고': '우고트', '이렐': '이렐리아', 
             '이브': '이브린', '이지': '이지리얼', '일라': '일라오이', '자르': '자르반', '자이': '자이라', '제라': '제라스', 
             '제이': '제이스', '질리': '질리언', '징크': '징크스', '초가스': '초가스', '카사': '카사딘', '카시': '카시오페아', 
             '카이': '카이사', '카직': '카직스', '카타': '카타리나', '칼리': '칼리스타', '케넨': '케넨', '케틀': '케이틀린', 
@@ -224,13 +238,13 @@
             { id: 'SUP', name: '서폿', cssClass: 'lane-sup', default: ['점화', '점멸'] }
         ];
 
-        // 브리핑 뷰 전용 컬러 매핑 매트릭스
+        // 🎨 가시성이 극대화된 5개 라인 전용 컬러 세트 (겹치지 않는 선명한 색상)
         const laneColors = {
-            '탑': '#46a374',
-            '정글': '#9b59b6',
-            '미드': '#3498db',
-            '원딜': '#e74c3c',
-            '서폿': '#f1c40f'
+            '탑': '#2ecc71',   // 네온 그린
+            '정글': '#e07bf7', // 밝은 연보라
+            '미드': '#3498db',  // 스카이 블루
+            '원딜': '#ff4d4d',  // 고광도 레드
+            '서폿': '#f1c40f'   // 선명한 옐로우
         };
 
         let activeTimers = {};
@@ -354,7 +368,7 @@
             window.ltTimeout = setTimeout(() => t.style.opacity = '0', 2000);
         }
 
-        // 레이아웃 동적 렌더러
+        // 레이아웃 동적 생성기
         const app = document.getElementById('app');
         lanes.forEach(lane => {
             const row = document.createElement('div');
@@ -455,6 +469,7 @@
             }
         }
 
+        // 스펠 단축 연산
         function getSpellModifier(hasUtong, hasShoes) {
             let speed = 0;
             if (hasUtong) speed += 18;
@@ -462,6 +477,7 @@
             return 100 / (100 + speed);
         }
 
+        // 가속 단축 연산
         function getUltModifier(hasShoes) {
             let speed = 0;
             if (hasShoes) speed += 15;
@@ -473,16 +489,12 @@
             if (!isVoiceEnabled) return; 
 
             window.speechSynthesis.cancel();
-
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'ko-KR';
 
             const volumeSliderVal = parseInt(document.getElementById('voiceVolume').value) || 0;
             utterance.volume = volumeSliderVal / 100;
-
             utterance.rate = 1.05; 
-            utterance.pitch = 1.0; 
-
             window.speechSynthesis.speak(utterance);
         }
 
@@ -544,7 +556,7 @@
             btn.innerText = formatToOrderTime(targetGameTime);
         }
 
-        // 📊 [개선 패치] 이원화된 전용 브리핑 뷰 및 컬러 동적 바인딩 시스템
+        // 📊 [완전 전면 리뉴얼] 네온 하이라이트 테두리 및 폰트 대형화 시스템 적용
         function updateDualSummaryView(spellList, ultList) {
             const spellBox = document.getElementById('spellSummaryContent');
             const ultBox = document.getElementById('ultSummaryContent');
@@ -555,8 +567,9 @@
             } else {
                 spellBox.innerHTML = spellList.map(item => {
                     const clr = laneColors[item.laneKr] || '#ffffff';
+                    // 해당 라인의 전용 컬러로 테두리를 2px 둘러 싸서 구분을 확실하게 함
                     return `
-                        <div class="order-item" id="order-node-${item.key}">
+                        <div class="order-item" id="order-node-${item.key}" style="border: 2px solid ${clr}; box-shadow: 0 0 4px ${clr}44;">
                             <span class="item-text" style="color: ${clr};">${item.laneKr} ${item.shortName}</span>
                             <span class="item-time">${item.targetTimeStr}</span>
                         </div>
@@ -571,7 +584,7 @@
                 ultBox.innerHTML = ultList.map(item => {
                     const clr = laneColors[item.laneKr] || '#ffffff';
                     return `
-                        <div class="order-item" id="order-node-${item.key}">
+                        <div class="order-item" id="order-node-${item.key}" style="border: 2px solid ${clr}; box-shadow: 0 0 4px ${clr}44;">
                             <span class="item-text" style="color: ${clr};">${item.laneKr} ${item.shortName}</span>
                             <span class="item-time">${item.targetTimeStr}</span>
                         </div>
@@ -580,7 +593,7 @@
             }
         }
 
-        // 메인 통합 엔진 클락 루프
+        // 동적 연산 메인 엔진 루프
         setInterval(() => {
             const currentSeconds = getGameTimeSeconds();
             let spellSummary = [];
