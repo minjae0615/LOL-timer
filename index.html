@@ -2,94 +2,11 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>롤 스펠 체크 - 눈 보호 에디션</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>롤 스펠 체크 - 프로 매치 에디션</title>
     <style>
-        :root {
-            --bg-color: #050505;
-            --box-color: #121212;
-            --text-time: #d1d1d1; /* 눈이 편안한 그레이 */
-            --border-width: 2px;
-        }
-
-        body { background-color: var(--bg-color); font-family: 'Pretendard', sans-serif; padding: 20px; }
-
-        .briefing-container { display: flex; gap: 20px; }
-        .box { background: var(--box-color); border-radius: 8px; padding: 15px; width: 300px; border: 1px solid #333; }
-        
-        .item { 
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 10px 15px; margin-bottom: 8px;
-            border: var(--border-width) solid transparent;
-            border-radius: 6px;
-            background: rgba(255,255,255,0.03);
-        }
-
-        /* 폰트 번짐 방지 및 가독성 최적화 */
-        .lane-text { font-weight: 700; font-size: 16px; }
-        .time-text { 
-            font-family: 'Consolas', monospace; 
-            font-size: 18px; 
-            color: var(--text-time); 
-            font-weight: 600;
-            background: rgba(0,0,0,0.4);
-            padding: 4px 8px;
-            border-radius: 4px;
-        }
-
-        /* 라인별 컬러 스타일 (번짐 없는 명확한 테두리) */
-        .c-top { border-color: #00A86B; color: #00A86B; }
-        .c-jgl { border-color: #C2185B; color: #C2185B; }
-        .c-mid { border-color: #0057FF; color: #0057FF; }
-        .c-adc { border-color: #FF7A00; color: #FF7A00; }
-        .c-sup { border-color: #FFD600; color: #FFD600; }
-
-    </style>
-</head>
-<body>
-
-<div class="briefing-container">
-    <div class="box">
-        <h3 style="color:#fff; text-align:center;">스펠 브리핑 뷰</h3>
-        <div id="spell-list"></div>
-    </div>
-    
-    <div class="box">
-        <h3 style="color:#fff; text-align:center;">궁극기 브리핑 뷰</h3>
-        <div id="ult-list"></div>
-    </div>
-</div>
-
-<script>
-    // 시간 데이터를 MM:SS 형식으로 변환하는 함수
-    function formatTime(str) {
-        if(str.length !== 4) return str;
-        return str.substring(0, 2) + ":" + str.substring(2, 4);
-    }
-
-    // 예시 데이터 렌더링 로직 (기존 로직에 결합 가능)
-    function render() {
-        const spellData = [
-            {lane: '정글', spell: '강타', time: '0130', class: 'c-jgl'},
-            {lane: '원딜', spell: '방어막', time: '0300', class: 'c-adc'},
-            {lane: '서폿', spell: '점화', time: '0300', class: 'c-sup'}
-        ];
-
-        const spellList = document.getElementById('spell-list');
-        spellData.forEach(item => {
-            const div = document.createElement('div');
-            div.className = `item ${item.class}`;
-            div.innerHTML = `
-                <span class="lane-text">${item.lane} ${item.spell}</span>
-                <span class="time-text">${formatTime(item.time)}</span>
-            `;
-            spellList.appendChild(div);
-        });
-    }
-
-    render();
-</script>
-
-</body>
+        html, body { height: 100%; margin: 0; padding: 0; background-color: #0b0b0e; }
+        body { font-family: 'Malgun Gothic', sans-serif; color: #f0e6d2; display: flex; flex-direction: column; justify-content: center; align-items: center; user-select: none; overflow: hidden; position: relative; }
         
         /* 상단 시간설정 및 옵션 */
         .game-clock-container { position: absolute; top: 10px; left: 15px; background: rgba(26, 26, 31, 0.95); padding: 6px 12px; border-radius: 6px; border: 1px solid #43434d; display: flex; align-items: center; gap: 12px; z-index: 20; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
