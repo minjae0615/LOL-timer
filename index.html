@@ -3,63 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LoL 인게임 타임스탬프 스펠 체크</title>
+    <title>LoL 인게임 타임스탬프 스펠 체크 (가독성 업그레이드)</title>
     <style>
-        html, body { height: 100%; margin: 0; padding: 0; background-color: #121212; }
+        html, body { height: 100%; margin: 0; padding: 0; background-color: #0f0f12; }
         body { font-family: 'Malgun Gothic', sans-serif; color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center; user-select: none; overflow: hidden; position: relative; }
         
         /* [좌측 상단] 게임 시간 컨트롤러 */
-        .game-clock-container { position: absolute; top: 15px; left: 15px; background: rgba(26, 26, 30, 0.9); padding: 8px 12px; border-radius: 6px; border: 1px solid #3c3c41; display: flex; align-items: center; gap: 6px; z-index: 20; }
-        .game-clock-label { font-size: 11px; color: #ffcd00; font-weight: bold; }
-        .game-time-input { width: 50px; background: #2b2b2b; color: #ffcd00; border: 1px solid #555; border-radius: 3px; font-size: 12px; text-align: center; font-weight: bold; padding: 2px; }
-        .clock-btn { padding: 4px 8px; font-size: 11px; font-weight: bold; border: none; border-radius: 3px; cursor: pointer; background: #3d4461; color: #fff; }
-        .clock-btn.running { background: #a31e24; }
+        .game-clock-container { position: absolute; top: 15px; left: 15px; background: rgba(20, 20, 25, 0.95); padding: 10px 14px; border-radius: 8px; border: 1px solid #4c4c55; display: flex; align-items: center; gap: 8px; z-index: 20; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .game-clock-label { font-size: 12px; color: #ffcd00; font-weight: bold; letter-spacing: 0.5px; }
+        .game-time-input { width: 65px; background: #25252b; color: #ffcd00; border: 1px solid #666; border-radius: 4px; font-size: 14px; text-align: center; font-weight: bold; padding: 4px; }
+        .clock-btn { padding: 5px 10px; font-size: 12px; font-weight: bold; border: none; border-radius: 4px; cursor: pointer; background: #3d4461; color: #fff; transition: background 0.1s; }
+        .clock-btn:hover { background: #4d567d; }
+        .clock-btn.running { background: #d92b36; }
 
         /* 알림창 */
-        .left-toast { position: absolute; top: 60px; left: 15px; color: #ff9900; font-size: 12px; font-weight: bold; background: rgba(0,0,0,0.7); padding: 5px 10px; border-radius: 4px; border-left: 3px solid #ff9900; pointer-events: none; opacity: 0; transition: opacity 0.2s; z-index: 10; }
+        .left-toast { position: absolute; top: 65px; left: 15px; color: #ff9900; font-size: 13px; font-weight: bold; background: rgba(0,0,0,0.85); padding: 6px 12px; border-radius: 4px; border-left: 4px solid #ff9900; pointer-events: none; opacity: 0; transition: opacity 0.2s; z-index: 10; }
 
         /* 메인 컨테이너 */
-        .main-wrapper { background-color: #1a1a1a; padding: 12px; border-radius: 10px; border: 1px solid #2d2d32; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 95%; max-width: 820px; box-sizing: border-box; margin-top: 40px; }
-        .flex-container { display: flex; flex-direction: column; gap: 8px; }
+        .main-wrapper { background-color: #16161a; padding: 16px; border-radius: 12px; border: 1px solid #323238; box-shadow: 0 15px 40px rgba(0,0,0,0.6); width: 95%; max-width: 900px; box-sizing: border-box; margin-top: 50px; }
+        .flex-container { display: flex; flex-direction: column; gap: 12px; }
         
         /* 라인별 가로 행 */
-        .lane-row { display: flex; align-items: center; background-color: #222227; border: 1px solid #3c3c41; border-radius: 6px; padding: 6px 12px; gap: 10px; min-width: 0; }
-        .lane-title { width: 45px; font-size: 14px; font-weight: bold; color: #ffcd00; text-align: center; flex-shrink: 0; }
+        .lane-row { display: flex; align-items: center; background-color: #1f1f25; border: 1px solid #3c3c46; border-radius: 8px; padding: 10px 16px; gap: 14px; min-width: 0; transition: background-color 0.2s; }
+        .lane-row:hover { background-color: #24242c; }
+        .lane-title { width: 50px; font-size: 16px; font-weight: 900; color: #ffcd00; text-align: center; flex-shrink: 0; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         
         /* 챔피언 입력창 */
-        .champ-input { width: 75px; padding: 5px; background: #2e2e34; color: #fff; border: 1px solid #555; border-radius: 4px; font-size: 12px; text-align: center; font-weight: bold; flex-shrink: 0; }
-        .champ-input:focus { border-color: #ffcd00; outline: none; }
+        .champ-input { width: 90px; padding: 7px; background: #2a2a32; color: #fff; border: 1px solid #5c5c66; border-radius: 6px; font-size: 13px; text-align: center; font-weight: bold; flex-shrink: 0; }
+        .champ-input:focus { border-color: #ffcd00; outline: none; background-color: #31313a; }
         
         /* 체크박스 옵션 */
-        .options { display: flex; flex-direction: column; gap: 3px; font-size: 11px; background: #1a1a1e; padding: 5px 8px; border-radius: 4px; width: 70px; flex-shrink: 0; box-sizing: border-box; }
-        .options label { display: flex; align-items: center; gap: 3px; cursor: pointer; white-space: nowrap; }
+        .options { display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: bold; color: #aaa; background: #151519; padding: 8px 10px; border-radius: 6px; width: 80px; flex-shrink: 0; box-sizing: border-box; }
+        .options label { display: flex; align-items: center; gap: 4px; cursor: pointer; white-space: nowrap; }
+        .options label:hover { color: #fff; }
         
         /* 스펠 및 궁극기 박스 구조 */
-        .spell-container { display: flex; gap: 8px; flex-grow: 1; align-items: center; min-width: 0; }
-        .slot-box { text-align: center; background: #151518; padding: 6px; border-radius: 4px; border: 1px solid #2d2d32; display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0; }
-        .ult-box { flex: 1.4; background: #1a2436; border-color: #3b4b66; }
+        .spell-container { display: flex; gap: 10px; flex-grow: 1; align-items: center; min-width: 0; }
+        .slot-box { text-align: center; background: #111114; padding: 8px; border-radius: 6px; border: 1px solid #2d2d35; display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3); }
+        .ult-box { flex: 1.4; background: #162238; border-color: #354a6b; }
         
-        .select-input-group { display: flex; gap: 3px; justify-content: center; width: 100%; }
-        .spell-select { width: 100%; padding: 3px; background: #333; color: #fff; border: 1px solid #555; border-radius: 3px; font-size: 12px; cursor: pointer; min-width: 0; font-weight: bold; }
-        .ult-cooldown-input { width: 30%; max-width: 36px; padding: 2px; background: #2b2b2b; color: #ffcd00; border: 1px solid #555; border-radius: 3px; font-size: 11px; text-align: center; font-weight: bold; }
+        .select-input-group { display: flex; gap: 4px; justify-content: center; width: 100%; }
+        .spell-select { width: 100%; padding: 5px; background: #32323a; color: #fff; border: 1px solid #555; border-radius: 4px; font-size: 13px; cursor: pointer; min-width: 0; font-weight: bold; }
+        .spell-select:focus { border-color: #ffcd00; }
+        .ult-cooldown-input { width: 32%; max-width: 42px; padding: 4px 2px; background: #222228; color: #ffcd00; border: 1px solid #555; border-radius: 4px; font-size: 12px; text-align: center; font-weight: bold; }
         
         /* 버튼 스타일 */
-        .action-btn { width: 100%; padding: 6px 0; font-size: 12px; font-weight: bold; border: none; border-radius: 4px; cursor: pointer; background-color: #2d3246; color: #f0e6d2; border: 1px solid #464e66; transition: all 0.1s; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
-        .action-btn:hover { background-color: #3d4461; }
-        .action-btn.active { background-color: #a31e24; color: white; border-color: #ff4d52; }
-        .ult-box .action-btn { background-color: #1f3a60; border-color: #2d558a; }
-        .ult-box .action-btn.active { background-color: #a31e24; border-color: #ff4d52; }
+        .action-btn { width: 100%; padding: 8px 0; font-size: 13px; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; background-color: #2e354d; color: #f0e6d2; border: 1px solid #464f73; transition: all 0.1s; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+        .action-btn:hover { background-color: #3e4766; color: #fff; }
+        .action-btn.active { background-color: #c8232c; color: white; border-color: #ff4d52; font-size: 14px; font-weight: 900; letter-spacing: 0.5px; }
+        .ult-box .action-btn { background-color: #1c3559; border-color: #2b5185; }
+        .ult-box .action-btn:hover { background-color: #254473; }
+        .ult-box .action-btn.active { background-color: #c8232c; border-color: #ff4d52; }
         
-        .timer-display { font-size: 12px; font-weight: bold; color: #00ffcc; height: 16px; text-align: center; white-space: nowrap; }
+        /* 🔥 [핵심 수정] 타이머 숫자 극대화 스타일 */
+        .timer-display { font-size: 20px; font-weight: 900; color: #00ffcc; height: 26px; line-height: 26px; text-align: center; white-space: nowrap; letter-spacing: 1px; text-shadow: 0 0 8px rgba(0, 255, 204, 0.4); margin-top: 2px; }
+        .timer-display.running { font-size: 22px; color: #ff4d52; text-shadow: 0 0 10px rgba(255, 77, 82, 0.5); font-family: 'Courier New', Courier, monospace; }
         
         /* 궁극기 레벨 라디오 */
-        .ult-levels { display: flex; justify-content: space-between; font-size: 10px; background: #222; padding: 2px 4px; border-radius: 3px; margin-bottom: 2px; width: 100%; box-sizing: border-box; }
-        .ult-levels label { display: flex; align-items: center; gap: 2px; cursor: pointer; }
+        .ult-levels { display: flex; justify-content: space-between; font-size: 11px; font-weight: bold; background: #111115; padding: 3px 6px; border-radius: 4px; margin-bottom: 2px; width: 100%; box-sizing: border-box; border: 1px solid #2d2d35; }
+        .ult-levels label { display: flex; align-items: center; gap: 3px; cursor: pointer; color: #999; }
+        .ult-levels input-radio { cursor: pointer; }
+        .ult-levels input[type="radio"]:checked + span, .ult-levels label:has(input:checked) { color: #ffcd00; }
     </style>
 </head>
 <body>
 
-    <!-- 게임 시간 동기화 컨트롤러 -->
     <div class="game-clock-container">
         <span class="game-clock-label">GAME TIME</span>
         <input type="text" class="game-time-input" id="gameClockInput" value="00:00" placeholder="00:00">
@@ -67,7 +75,6 @@
         <button class="clock-btn" onclick="syncGameClock()">동기화</button>
     </div>
 
-    <!-- 모퉁이 알림 메시지 -->
     <div class="left-toast" id="leftToast"></div>
 
     <div class="main-wrapper">
@@ -122,7 +129,7 @@
 
         // 유저 친화적 줄임말 사전 데이터
         const aliasDB = {
-            '블츠': '블리츠크랭크', '블리': '블리츠크랭크', '블클': '블리츠크랭크', '블리茨': '블리츠크랭크',
+            '블츠': '블리츠크랭크', '블리': '블리츠크랭크', '블클': '블리츠크랭크', '블리츠': '블리츠크랭크',
             '트린': '트린다미어', '트페': '트위스티드페이트', 'tf': '트위스티드페이트', '갱플': '갱플랭크', 'gp': '갱플랭크',
             '그라': '그라가스', '그브': '그레이브즈', '노틸': '노틸러스', '녹턴': '녹턴', '다리': '다리우스', '다이': '다이애나',
             '드레': '드레이븐', '레오': '레오나', '레넥': '레넥톤', '르블': '르블랑', '리산': '리산드라', '마이': '마스터이', 
@@ -258,9 +265,9 @@
             html += `
                 <div class="slot-box ult-box">
                     <div class="ult-levels">
-                        <label><input type="radio" name="ultlvl-${lane.id}" id="ultlvl-${lane.id}-6" value="6" checked onchange="onOptionChange('${lane.id}')">6</label>
-                        <label><input type="radio" name="ultlvl-${lane.id}" id="ultlvl-${lane.id}-11" value="11" onchange="onOptionChange('${lane.id}')">11</label>
-                        <label><input type="radio" name="ultlvl-${lane.id}" id="ultlvl-${lane.id}-16" value="16" onchange="onOptionChange('${lane.id}')">16</label>
+                        <label><input type="radio" name="ultlvl-${lane.id}" id="ultlvl-${lane.id}-6" value="6" checked onchange="onOptionChange('${lane.id}')"><span>6</span></label>
+                        <label><input type="radio" name="ultlvl-${lane.id}" id="ultlvl-${lane.id}-11" value="11" onchange="onOptionChange('${lane.id}')"><span>11</span></label>
+                        <label><input type="radio" name="ultlvl-${lane.id}" id="ultlvl-${lane.id}-16" value="16" onchange="onOptionChange('${lane.id}')"><span>16</span></label>
                     </div>
                     <div class="select-input-group">
                         <input type="number" class="ult-cooldown-input" id="ultbase-${lane.id}-6" value="120" onchange="onOptionChange('${lane.id}')">
@@ -404,13 +411,14 @@
             
             if (timeLeft <= 0) {
                 resetTimer(laneId, slotIndex);
-                display.innerText = "온(ON)";
+                display.innerText = "READY";
+                display.classList.remove('running');
                 display.style.color = "#00ffcc";
             } else {
                 const orderText = formatToOrderTime(targetGameTime);
                 btn.innerText = orderText; 
                 display.innerText = orderText; 
-                display.style.color = "#ff4d52";
+                display.classList.add('running');
             }
         }
 
@@ -427,13 +435,14 @@
             
             if (timeLeft <= 0) {
                 resetUltTimer(laneId);
-                display.innerText = "ON";
+                display.innerText = "READY";
+                display.classList.remove('running');
                 display.style.color = "#00ffcc";
             } else {
                 const orderText = formatToOrderTime(targetGameTime);
                 btn.innerText = orderText;
                 display.innerText = orderText;
-                display.style.color = "#ff4d52";
+                display.classList.add('running');
             }
         }
 
@@ -444,8 +453,10 @@
 
             const btn = document.getElementById('btn-' + laneId + '-' + slotIndex);
             btn.classList.remove('active');
-            document.getElementById('timer-' + laneId + '-' + slotIndex).innerText = "READY";
-            document.getElementById('timer-' + laneId + '-' + slotIndex).style.color = "#00ffcc";
+            const display = document.getElementById('timer-' + laneId + '-' + slotIndex);
+            display.innerText = "READY";
+            display.classList.remove('running');
+            display.style.color = "#00ffcc";
             onSpellSelectChange(laneId, slotIndex);
         }
 
@@ -457,8 +468,10 @@
             const btn = document.getElementById(`btn-${laneId}-ult`);
             btn.classList.remove('active');
             btn.innerText = "궁극기";
-            document.getElementById(`timer-${laneId}-ult`).innerText = "READY";
-            document.getElementById(`timer-${laneId}-ult`).style.color = "#00ffcc";
+            const display = document.getElementById(`timer-${laneId}-ult`);
+            display.innerText = "READY";
+            display.classList.remove('running');
+            display.style.color = "#00ffcc";
         }
     </script>
 </body>
