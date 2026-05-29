@@ -61,21 +61,35 @@
         .lane-row { display: flex; align-items: center; background-color: #16161f; border: 2px solid #2a2a38; border-radius: 8px; padding: 6px 12px; gap: 10px; min-width: 0; }
         .lane-title { width: 50px; font-size: 16px; font-weight: 900; text-align: center; flex-shrink: 0; letter-spacing: 0.5px; padding: 4px 0; border-radius: 4px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
         
-        /* 🎨 [알잘딱 대수정] 절대 안 겹치고 눈 확 트이는 초고대비 네온 레이더 컬러 스펙트럼 */
-        .lane-row.lane-top { border-color: #00ff66; box-shadow: 0 0 6px rgba(0, 255, 102, 0.15); }
-        .lane-row.lane-top .lane-title { color: #000; background-color: #00ff66; }
+        /* 🎨 image_b819fb.png 기반 가독성 최적화 디자인 */
 
-        .lane-row.lane-jgl { border-color: #ff00ff; box-shadow: 0 0 6px rgba(255, 0, 255, 0.15); }
-        .lane-row.lane-jgl .lane-title { color: #fff; background-color: #ff00ff; }
+        /* 기본 설정 */
+        .lane-row { 
+            background-color: #0b0b0e; 
+            border: 2px solid #2a2a38; 
+            border-radius: 8px; 
+            padding: 6px 12px; 
+        }
+        
+        /* 탑: 에메랄드 그린 (#00A86B) - 눈 피로 최소화 */
+        .lane-row.lane-top { border-color: #00A86B; }
+        .lane-row.lane-top .lane-title { background-color: #00A86B; color: #000; font-weight: bold; }
 
-        .lane-row.lane-mid { border-color: #00ffff; box-shadow: 0 0 6px rgba(0, 255, 255, 0.15); }
-        .lane-row.lane-mid .lane-title { color: #000; background-color: #00ffff; }
+        /* 정글: 딥 마젠타 (#C2185B) - 다른 색과 충돌 없음 */
+        .lane-row.lane-jgl { border-color: #C2185B; }
+        .lane-row.lane-jgl .lane-title { background-color: #C2185B; color: #fff; font-weight: bold; }
 
-        .lane-row.lane-adc { border-color: #ff3333; box-shadow: 0 0 6px rgba(255, 51, 51, 0.15); }
-        .lane-row.lane-adc .lane-title { color: #fff; background-color: #ff3333; }
-
-        .lane-row.lane-sup { border-color: #ffff00; box-shadow: 0 0 6px rgba(255, 255, 0, 0.15); }
-        .lane-row.lane-sup .lane-title { color: #000; background-color: #ffff00; }
+        /* 미드: 로열 블루 (#0057FF) - 강력한 기본 대비 */
+        .lane-row.lane-mid { border-color: #0057FF; }
+        .lane-row.lane-mid .lane-title { background-color: #0057FF; color: #fff; font-weight: bold; }
+        
+        /* 원딜: 비비드 오렌지 (#FF7A00) - 파랑(미드)과 극강의 분리 */
+        .lane-row.lane-adc { border-color: #FF7A00; }
+        .lane-row.lane-adc .lane-title { background-color: #FF7A00; color: #000; font-weight: bold; }
+        
+        /* 서폿: 골드 옐로 (#FFD600) - 즉시 시선 유도 */
+        .lane-row.lane-sup { border-color: #FFD600; }
+        .lane-row.lane-sup .lane-title { background-color: #FFD600; color: #000; font-weight: bold; }
 
         /* 챔피언 검색 */
         .champ-input { width: 85px; padding: 5px; background: #22222b; color: #fff; border: 1px solid #444452; border-radius: 4px; font-size: 13px; text-align: center; font-weight: bold; flex-shrink: 0; }
