@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>롤 스펠 체크 - 부드러운 음성 에디션</title>
+    <title>롤 스펠 체크 - 브리핑 에디션</title>
     <style>
         html, body { height: 100%; margin: 0; padding: 0; background-color: #0b0b0e; }
         body { font-family: 'Malgun Gothic', sans-serif; color: #f0e6d2; display: flex; flex-direction: column; justify-content: center; align-items: center; user-select: none; overflow: hidden; position: relative; }
@@ -95,7 +95,7 @@
         <button class="clock-btn" id="gameClockToggleBtn" onclick="toggleGameClock()">시작</button>
         <button class="clock-btn reset" onclick="resetAllData()">전체 초기화</button>
         
-        <!-- 🔊 음성 컨트롤 영역: 처음엔 checked를 빼서 꺼진 상태로 시작하게 수정 -->
+        <!-- 🔊 기본 꺼짐 상태 시작 -->
         <div class="voice-control-group">
             <label class="voice-opt-label">
                 <input type="checkbox" id="voiceAlertToggle" onchange="onVoiceToggleChange()"> 음성 알림 활성화
@@ -128,7 +128,6 @@
         let gameTimeOffset = 0;   
         let gameClockInterval = null;
 
-        // 챔피언 데이터베이스
         const championUltDB = {
             '가렌': [120, 100, 80], '갈리오': [200, 180, 160], '갱플랭크': [180, 160, 140], '그라가스': [120, 100, 80], '그레이브즈': [120, 90, 60],
             '나르': [90, 70, 50], '나미': [120, 110, 100], '노틸러스': [140, 110, 80], '녹턴': [140, 115, 90],
@@ -275,7 +274,6 @@
             const isEnabled = document.getElementById('voiceAlertToggle').checked;
             if(isEnabled) {
                 showLeftToast("🔊 음성 알림이 활성화되었습니다.");
-                // 사용자가 체크를 직접 눌렀을 때, 오디오 브라우저 락을 풀어주기 위한 빈 스피치 전송
                 const dummy = new SpeechSynthesisUtterance("");
                 window.speechSynthesis.speak(dummy);
             } else {
@@ -439,23 +437,21 @@
             return 100 / (100 + speed);
         }
 
-        // 🗣️ [개선 패치] 자연스럽고 조절 가능한 부드러운 순정 TTS 브리핑 엔진
+        // 🗣️ [개선 매치] 조사를 전부 배제하고 깔끔하게 딱 브리핑만 하도록 수정
         function speakOrderText(text) {
             const isVoiceEnabled = document.getElementById('voiceAlertToggle').checked;
-            if (!isVoiceEnabled) return; // 체크 해제 상태면 절대 소리 안 남
+            if (!isVoiceEnabled) return; 
 
-            // 기존에 말하고 있는 게 있다면 겹치지 않게 취소
             window.speechSynthesis.cancel();
 
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'ko-KR';
 
-            // 🎚️ 볼륨 설정 반영 (사용자가 설정한 0 ~ 100 값을 0.0 ~ 1.0으로 매핑)
             const volumeSliderVal = parseInt(document.getElementById('voiceVolume').value) || 0;
             utterance.volume = volumeSliderVal / 100;
 
-            // 🏃‍♂️ 뚝뚝 끊김 방지 패치: 한국어 대화 호흡에 가장 부드러운 속도(0.95 ~ 1.0) 조절
-            utterance.rate = 0.98; 
+            // 템포를 약간 빠르게 땡겨서 기계적인 느낌을 줄임
+            utterance.rate = 1.05; 
             utterance.pitch = 1.0; 
 
             window.speechSynthesis.speak(utterance);
@@ -511,7 +507,6 @@
             btn.innerText = formatToOrderTime(targetGameTime);
         }
 
-        // DOM 관리기
         function updateOrderSummaryView(newList) {
             const summaryBox = document.getElementById('orderSummaryContent');
             
@@ -580,13 +575,13 @@
                     if(shortName === '텔포') shortName = '텔';
                     if(shortName === '궁극기') shortName = '궁';
 
-                    // 🎯 정확히 20초 남았을 때 부드러운 자연어 오더 전달
+                    // 🎯 20초 남았을 때 브리핑 대사 변경
                     if (timeLeft <= 20 && !timer.playedAlert) {
                         const krLane = laneKrNameDB[timer.lane] || timer.lane;
                         const spellTxt = (timer.name === '궁극기') ? '궁' : timer.name;
                         
-                        // 문장 조사를 다듬어 훨씬 인간이 말하는 대사처럼 튜닝
-                        speakOrderText(`${krLane} ${spellTxt} 이십초 전입니다.`);
+                        // "~입니다" 같은 조사를 싹 빼서 깔끔하게 끝남 (예: "탑 점멸 이십초 전")
+                        speakOrderText(`${krLane} ${spellTxt} 이십초 전`);
                         timer.playedAlert = true;
                     }
 
