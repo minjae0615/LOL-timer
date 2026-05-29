@@ -35,7 +35,7 @@
 
         /* 좌측 메인판 */
         .main-wrapper { background-color: #121217; padding: 10px; border-radius: 12px; border: 1px solid #262631; box-shadow: 0 15px 40px rgba(0,0,0,0.7); flex: 2.1; min-width: 0; box-sizing: border-box; }
-        .flex-container { display: flex; flex-direction: column; gap: 10px; } /* 행 간격 넓힘 */
+        .flex-container { display: flex; flex-direction: column; gap: 10px; }
         
         /* 우측 이원화 브리핑 컨테이너 영역 */
         .right-briefing-zone { flex: 1.9; display: flex; gap: 12px; min-width: 520px; box-sizing: border-box; }
@@ -52,30 +52,30 @@
         .order-summary-content { font-size: 16px; font-weight: bold; color: #f0e6d2; flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
         
         /* 브리핑 아이템 스타일 및 애니메이션 효과 (글자 대폭 확대 및 테두리 부여) */
-        .order-item { display: flex; justify-content: space-between; align-items: center; background: #171722; padding: 10px 14px; border-radius: 6px; box-sizing: border-box; }
-        .order-item .item-text { font-size: 17px; font-weight: 900; letter-spacing: 0.5px; }
-        .order-item .item-time { font-size: 19px; color: #ffffff; font-family: 'Courier New', monospace; font-weight: 900; background: rgba(0,0,0,0.5); padding: 3px 8px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.15); }
+        .order-item { display: flex; justify-content: space-between; align-items: center; background: #13131a; padding: 11px 14px; border-radius: 6px; box-sizing: border-box; }
+        .order-item .item-text { font-size: 18px; font-weight: 900; letter-spacing: 0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+        .order-item .item-time { font-size: 20px; color: #ffffff; font-family: 'Courier New', monospace; font-weight: 900; background: rgba(0,0,0,0.7); padding: 3px 10px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); text-shadow: 0 0 5px #fff; }
         .order-summary-content .empty-msg { color: #5b5b66; font-size: 14px; background: none; border: none; text-align: center; padding-top: 80px; line-height: 1.6; font-weight: normal; }
 
         /* 라인별 행 디자인 (테두리 두께 강화) */
         .lane-row { display: flex; align-items: center; background-color: #16161f; border: 2px solid #2a2a38; border-radius: 8px; padding: 6px 12px; gap: 10px; min-width: 0; }
-        .lane-title { width: 50px; font-size: 16px; font-weight: 900; text-align: center; flex-shrink: 0; letter-spacing: 0.5px; padding: 4px 0; border-radius: 4px; }
+        .lane-title { width: 50px; font-size: 16px; font-weight: 900; text-align: center; flex-shrink: 0; letter-spacing: 0.5px; padding: 4px 0; border-radius: 4px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
         
-        /* 라인별 전용 색상 및 테두리 색상 매핑 매트릭스 (절대 겹치지 않는 고대비 세팅) */
-        .lane-row.lane-top { border-color: #2ecc71; box-shadow: inset 0 0 5px rgba(46, 204, 113, 0.2); }
-        .lane-row.lane-top .lane-title { color: #fff; background-color: #2ecc71; }
+        /* 🎨 [알잘딱 대수정] 절대 안 겹치고 눈 확 트이는 초고대비 네온 레이더 컬러 스펙트럼 */
+        .lane-row.lane-top { border-color: #00ff66; box-shadow: 0 0 6px rgba(0, 255, 102, 0.15); }
+        .lane-row.lane-top .lane-title { color: #000; background-color: #00ff66; }
 
-        .lane-row.lane-jgl { border-color: #9b59b6; box-shadow: inset 0 0 5px rgba(155, 89, 182, 0.2); }
-        .lane-row.lane-jgl .lane-title { color: #fff; background-color: #9b59b6; }
+        .lane-row.lane-jgl { border-color: #ff00ff; box-shadow: 0 0 6px rgba(255, 0, 255, 0.15); }
+        .lane-row.lane-jgl .lane-title { color: #fff; background-color: #ff00ff; }
 
-        .lane-row.lane-mid { border-color: #3498db; box-shadow: inset 0 0 5px rgba(52, 152, 219, 0.2); }
-        .lane-row.lane-mid .lane-title { color: #fff; background-color: #3498db; }
+        .lane-row.lane-mid { border-color: #00ffff; box-shadow: 0 0 6px rgba(0, 255, 255, 0.15); }
+        .lane-row.lane-mid .lane-title { color: #000; background-color: #00ffff; }
 
-        .lane-row.lane-adc { border-color: #e74c3c; box-shadow: inset 0 0 5px rgba(231, 76, 60, 0.2); }
-        .lane-row.lane-adc .lane-title { color: #fff; background-color: #e74c3c; }
+        .lane-row.lane-adc { border-color: #ff3333; box-shadow: 0 0 6px rgba(255, 51, 51, 0.15); }
+        .lane-row.lane-adc .lane-title { color: #fff; background-color: #ff3333; }
 
-        .lane-row.lane-sup { border-color: #f1c40f; box-shadow: inset 0 0 5px rgba(241, 196, 15, 0.2); }
-        .lane-row.lane-sup .lane-title { color: #111; background-color: #f1c40f; }
+        .lane-row.lane-sup { border-color: #ffff00; box-shadow: 0 0 6px rgba(255, 255, 0, 0.15); }
+        .lane-row.lane-sup .lane-title { color: #000; background-color: #ffff00; }
 
         /* 챔피언 검색 */
         .champ-input { width: 85px; padding: 5px; background: #22222b; color: #fff; border: 1px solid #444452; border-radius: 4px; font-size: 13px; text-align: center; font-weight: bold; flex-shrink: 0; }
@@ -104,8 +104,8 @@
         .ult-box .action-btn.active { background-color: #5b1a1e; border-color: #8c2d32; color: #ff9999; }
         
         /* 메인 판 타이머 텍스트 색상 */
-        .timer-display { font-size: 19px; font-weight: bold; color: #2ecc71; height: 24px; line-height: 24px; text-align: center; white-space: nowrap; letter-spacing: 0.5px; }
-        .timer-display.running { color: #e67e22; font-family: 'Courier New', Courier, monospace; font-weight: 900; }
+        .timer-display { font-size: 19px; font-weight: bold; color: #00ff66; height: 24px; line-height: 24px; text-align: center; white-space: nowrap; letter-spacing: 0.5px; }
+        .timer-display.running { color: #ff9900; font-family: 'Courier New', Courier, monospace; font-weight: 900; text-shadow: 0 0 3px rgba(255,153,0,0.5); }
         
         /* 궁 레벨 선택 */
         .ult-levels { display: flex; justify-content: space-between; font-size: 11px; font-weight: bold; background: #09090d; padding: 2px 4px; border-radius: 4px; width: 100%; box-sizing: border-box; border: 1px solid #22222a; }
@@ -238,13 +238,13 @@
             { id: 'SUP', name: '서폿', cssClass: 'lane-sup', default: ['점화', '점멸'] }
         ];
 
-        // 🎨 가시성이 극대화된 5개 라인 전용 컬러 세트 (겹치지 않는 선명한 색상)
+        // 🎨 [레이더 고대비 컬러 매트릭스] 명도와 색상 각도를 완전히 찢어놓은 알잘딱 버전
         const laneColors = {
-            '탑': '#2ecc71',   // 네온 그린
-            '정글': '#e07bf7', // 밝은 연보라
-            '미드': '#3498db',  // 스카이 블루
-            '원딜': '#ff4d4d',  // 고광도 레드
-            '서폿': '#f1c40f'   // 선명한 옐로우
+            '탑': '#00ff66',   // 형광 네온 그린
+            '정글': '#ff00ff', // 강렬한 마젠타 핫핑크
+            '미드': '#00ffff',  // 얼음빛 네온 시안 블루
+            '원딜': '#ff3333',  // 고광도 강렬한 레드
+            '서폿': '#ffff00'   // 쨍한 선명 노란색
         };
 
         let activeTimers = {};
@@ -469,7 +469,6 @@
             }
         }
 
-        // 스펠 단축 연산
         function getSpellModifier(hasUtong, hasShoes) {
             let speed = 0;
             if (hasUtong) speed += 18;
@@ -477,7 +476,6 @@
             return 100 / (100 + speed);
         }
 
-        // 가속 단축 연산
         function getUltModifier(hasShoes) {
             let speed = 0;
             if (hasShoes) speed += 15;
@@ -556,44 +554,43 @@
             btn.innerText = formatToOrderTime(targetGameTime);
         }
 
-        // 📊 [완전 전면 리뉴얼] 네온 하이라이트 테두리 및 폰트 대형화 시스템 적용
+        // 📊 개별 네온 하이라이팅 + 그림자 레이어 시스템 탑재
         function updateDualSummaryView(spellList, ultList) {
             const spellBox = document.getElementById('spellSummaryContent');
             const ultBox = document.getElementById('ultSummaryContent');
             
-            // 1. 스펠 전용 칸 렌더링
+            // 1. 스펠 브리핑 전용 칸 렌더링
             if (spellList.length === 0) {
                 spellBox.innerHTML = '<div class="empty-msg">카운트다운 중인<br>스펠이 없습니다.</div>';
             } else {
                 spellBox.innerHTML = spellList.map(item => {
                     const clr = laneColors[item.laneKr] || '#ffffff';
-                    // 해당 라인의 전용 컬러로 테두리를 2px 둘러 싸서 구분을 확실하게 함
                     return `
-                        <div class="order-item" id="order-node-${item.key}" style="border: 2px solid ${clr}; box-shadow: 0 0 4px ${clr}44;">
+                        <div class="order-item" id="order-node-${item.key}" style="border: 2px solid ${clr}; box-shadow: 0 0 8px ${clr}55, inset 0 0 4px ${clr}22;">
                             <span class="item-text" style="color: ${clr};">${item.laneKr} ${item.shortName}</span>
-                            <span class="item-time">${item.targetTimeStr}</span>
+                            <span class="item-time" style="border-color: ${clr}aa;">${item.targetTimeStr}</span>
                         </div>
                     `;
                 }).join('');
             }
 
-            // 2. 궁극기 전용 칸 렌더링
+            // 2. 궁극기 브리핑 전용 칸 렌더링
             if (ultList.length === 0) {
                 ultBox.innerHTML = '<div class="empty-msg">카운트다운 중인<br>궁극기가 없습니다.</div>';
             } else {
                 ultBox.innerHTML = ultList.map(item => {
                     const clr = laneColors[item.laneKr] || '#ffffff';
                     return `
-                        <div class="order-item" id="order-node-${item.key}" style="border: 2px solid ${clr}; box-shadow: 0 0 4px ${clr}44;">
+                        <div class="order-item" id="order-node-${item.key}" style="border: 2px solid ${clr}; box-shadow: 0 0 8px ${clr}55, inset 0 0 4px ${clr}22;">
                             <span class="item-text" style="color: ${clr};">${item.laneKr} ${item.shortName}</span>
-                            <span class="item-time">${item.targetTimeStr}</span>
+                            <span class="item-time" style="border-color: ${clr}aa;">${item.targetTimeStr}</span>
                         </div>
                     `;
                 }).join('');
             }
         }
 
-        // 동적 연산 메인 엔진 루프
+        // 엔진 주기적 클락 루프
         setInterval(() => {
             const currentSeconds = getGameTimeSeconds();
             let spellSummary = [];
